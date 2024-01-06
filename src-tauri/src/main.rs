@@ -1,38 +1,42 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use rdev::{listen, Event};
+use rdev::{Event, EventType};
 use tauri::{AppHandle, Manager};
 
+#[tauri::command]
+fn get_display_size() -> (u64, u64) {
+    return rdev::display_size().unwrap();
+}
+
 fn get_callback(app: AppHandle) -> impl FnMut(Event) {
-    let callback = move |event: Event| {
+    return move |event: Event| {
         // println!("My callback {:?}", app);
         match event.event_type {
-            rdev::EventType::MouseMove { x, y } => {
+            EventType::MouseMove { x, y } => {
                 app.emit_all("MouseMove", [x, y]).unwrap();
             }
-            rdev::EventType::KeyPress(key) => {
+            EventType::KeyPress(key) => {
                 let key_str = format!("{:?}", key);
                 app.emit_all("KeyPress", key_str).unwrap();
             }
-            rdev::EventType::KeyRelease(_key) => {
+            EventType::KeyRelease(_key) => {
                 app.emit_all("KeyRelease", true).unwrap();
             }
-            rdev::EventType::ButtonPress(_button) => {
+            EventType::ButtonPress(_button) => {
                 app.emit_all("ButtonPress", true).unwrap();
             }
-            rdev::EventType::ButtonRelease(_button) => {
+            EventType::ButtonRelease(_button) => {
                 app.emit_all("ButtonRelease", true).unwrap();
             }
             _ => {}
         }
     };
-    callback
 }
 
 fn spawn_event_listener(app: AppHandle) {
     tauri::async_runtime::spawn(async move {
-        if let Err(error) = listen(get_callback(app)) {
+        if let Err(error) = rdev::listen(get_callback(app)) {
             println!("Error: {:?}", error)
         }
     });
@@ -45,7 +49,7 @@ fn main() {
             spawn_event_listener(app.app_handle());
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![get_display_size])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
