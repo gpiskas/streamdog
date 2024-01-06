@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
-import Mouse from './Mouse/Mouse';
 
 function App() {
   const [displaySize, setDisplaySize] = useState<number[]>([0, 0]);
@@ -10,6 +9,7 @@ function App() {
   const [keyPressKey, setKeyPressKey] = useState('');
   const [keyPress, setKeyPress] = useState(false);
   const [buttonPress, setButtonPress] = useState(false);
+  const mousepadRef = useRef(null as null | HTMLDivElement);
 
   useEffect(() => {
     getDisplaySize();
@@ -49,11 +49,36 @@ function App() {
     listenersPromise.then(listeners => listeners.forEach(listener => listener()));
   }
 
+
+  function getMousePositionStyle(): React.CSSProperties {
+    const [mouseX, mouseY] = mouseMove;
+    const [displayWidth, displayHeight] = displaySize;
+    const mouseWidthPercent = mouseX/displayWidth;
+    const mouseHeightPercent = mouseY/displayHeight;
+    const mousepadWidth = mousepadRef.current?.clientWidth as number;
+    const mousepadHeight = mousepadRef.current?.clientHeight as number;
+    return {
+      left: mouseWidthPercent * mousepadWidth,
+      top: mouseHeightPercent * mousepadHeight,
+    };
+  }
+
   return (
-    <div className="container" data-tauri-drag-region>
-      <div className="canvas">
-        <Mouse displaySize={displaySize}>
-        </Mouse>
+    <div id="container" data-tauri-drag-region>
+      <div id="background" data-tauri-drag-region>
+        <div id="mousepad" ref={mousepadRef} data-tauri-drag-region>
+          <div id="mouse" style={getMousePositionStyle()} data-tauri-drag-region>
+          </div>
+        </div>
+        <div id="keyboard" data-tauri-drag-region>
+
+        </div>
+        <div id="armMouse" data-tauri-drag-region>
+          AM
+        </div>
+        <div id="armKeyboard" data-tauri-drag-region>
+          AK
+        </div>
       </div>
     </div>
   );
