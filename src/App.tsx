@@ -4,6 +4,7 @@ import "./App.css";
 
 function App() {
   const [mouseMove, setMouseMove] = useState<number[]>([]);
+  const [keyPressKey, setKeyPressKey] = useState('');
   const [keyPress, setKeyPress] = useState(false);
   const [buttonPress, setButtonPress] = useState(false);
 
@@ -21,9 +22,11 @@ function App() {
         setMouseMove(event.payload as number[]);
       }),
       await listen('KeyPress', (event) => {
+        setKeyPressKey(event.payload as string);
         setKeyPress(true);
       }),
       await listen('KeyRelease', (event) => {
+        setKeyPressKey('');
         setKeyPress(false);
       }),
       await listen('ButtonPress', (event) => {
@@ -42,9 +45,10 @@ function App() {
 
   return (
     <div className="container" data-tauri-drag-region>
-      <div>Mouse: {mouseMove[0]}, {mouseMove[1]}</div>
-      <div>Key: {keyPress ? 1 : 0}</div>
-      <div>Button: {buttonPress ? 1 : 0}</div>
+      <div>MouseMove: {mouseMove[0]}, {mouseMove[1]}</div>
+      <div>KeyPress: {keyPress ? 1 : 0}</div>
+      <div>KeyPressKey: {keyPressKey}</div>
+      <div>ButtonPress: {buttonPress ? 1 : 0}</div>
     </div>
   );
 }
