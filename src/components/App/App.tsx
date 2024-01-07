@@ -3,13 +3,13 @@ import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
 import Mouse from '../Mouse/Mouse';
+import Keyboard from '../Keyboard/Keyboard';
 
 function App() {
   const [displaySize, setDisplaySize] = useState<number[]>([0, 0]);
   const [mousePosition, setMousePosition] = useState<number[]>([0, 0]);
-  const [keyPressKey, setKeyPressKey] = useState('');
-  const [keyPress, setKeyPress] = useState(false);
-  const [buttonPress, setButtonPress] = useState(false);
+  const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
+  const [buttonPress, setButtonPress] = useState<boolean>(false);
 
   useEffect(() => {
     getDisplaySize();
@@ -33,12 +33,10 @@ function App() {
       await listen('ButtonPress', _ => setButtonPress(true)),
       await listen('ButtonRelease', _ => setButtonPress(false)),
       await listen('KeyPress', event => {
-        setKeyPressKey(event.payload as string);
-        setKeyPress(true);
+        setKeyPress({id: event.id, key: event.payload as string});
       }),
       await listen('KeyRelease', _ => {
-        setKeyPressKey('');
-        setKeyPress(false);
+        setKeyPress(null);
       })
     ];
   }
@@ -56,9 +54,7 @@ function App() {
           mousePosition={mousePosition}
           buttonPress={buttonPress}>
         </Mouse>
-        <div id="keyboard" data-tauri-drag-region>
-
-        </div>
+        <Keyboard keyPress={keyPress}></Keyboard>
         <div id="armMouse" data-tauri-drag-region>
           AM
         </div>

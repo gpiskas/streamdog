@@ -8,13 +8,3 @@
   height: 100%;
   background: rosybrown;
 }
-
-#keyboard {
-  width: 45%;
-  height: 16%;
-  background: blue;
-  position: absolute;
-  top: 75%;
-  left: 40%;
-  transform: rotate(21deg);
-}

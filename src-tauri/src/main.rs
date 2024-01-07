@@ -16,12 +16,11 @@ fn get_callback(app: AppHandle) -> impl FnMut(Event) {
             EventType::MouseMove { x, y } => {
                 app.emit_all("MouseMove", [x, y]).unwrap();
             }
-            EventType::KeyPress(key) => {
-                let key_str = format!("{:?}", key);
-                app.emit_all("KeyPress", key_str).unwrap();
+            EventType::KeyPress(_key) => {
+                app.emit_all("KeyPress", event.name).unwrap();
             }
             EventType::KeyRelease(_key) => {
-                app.emit_all("KeyRelease", true).unwrap();
+                app.emit_all("KeyRelease", event.name).unwrap();
             }
             EventType::ButtonPress(_button) => {
                 app.emit_all("ButtonPress", true).unwrap();
