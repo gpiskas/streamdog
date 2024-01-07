@@ -21,9 +21,10 @@ function Mouse(props: Props) {
       const mousepadWidth = mousepad.clientWidth as number;
       const mousepadHeight = mousepad.clientHeight as number;
 
+      // inverse view
       return {
-        left: mouseWidthPercent * mousepadWidth + "px",
-        top: mouseHeightPercent * mousepadHeight + "px",
+        left: mousepadWidth - mouseWidthPercent * mousepadWidth + "px",
+        top: mousepadHeight - mouseHeightPercent * mousepadHeight + "px",
         background: props.buttonPress ? '#FFFFFF' : '#000000',
       }
     }
