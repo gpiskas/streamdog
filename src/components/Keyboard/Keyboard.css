@@ -1,11 +1,12 @@
 #keyboard {
-  width: 45%;
-  height: 16%;
-  background: rgb(201, 255, 208);
+  width: 57%;
+  height: 27%;
+  background: rgb(27, 27, 27);
+  border: 1px solid white;
   position: absolute;
-  top: 75%;
-  left: 40%;
-  transform: rotate3d(10, -3, 6, 65deg);
+  top: 73%;
+  left: 39%;
+  transform: rotate3d(10, -3, 4, 68deg);
 }
 
 #popupContainer {
@@ -20,6 +21,8 @@
   font-family: monospace;
   font-size: 10px;
   text-transform: capitalize;
+  color: white;
+  text-shadow: 0px 0 5px black;
   position: absolute;
   animation: fadeout 400ms;
   animation-fill-mode: forwards;

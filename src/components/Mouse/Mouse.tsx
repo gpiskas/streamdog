@@ -25,7 +25,7 @@ function Mouse(props: Props) {
       return {
         left: mousepadWidth - mouseWidthPercent * mousepadWidth + "px",
         top: mousepadHeight - mouseHeightPercent * mousepadHeight + "px",
-        background: props.buttonPress ? '#FFFFFF' : '#000000',
+        background: props.buttonPress ? 'black' : 'white',
       }
     }
   }

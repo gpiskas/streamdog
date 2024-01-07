@@ -6,7 +6,6 @@ interface Props {
 }
 
 function Keyboard(props: Props) {
-  const keyboardRef = useRef<HTMLDivElement>(null);
   const popupContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,7 +13,6 @@ function Keyboard(props: Props) {
       spawnKeyPressPopup(popupContainerRef.current, props.keyPress.key)
     }
   }, [popupContainerRef, props.keyPress])
-
 
   function spawnKeyPressPopup(popupContainer: HTMLDivElement, keyPress: string) {
     const containerWidth = popupContainer.clientWidth as number;
@@ -30,16 +28,8 @@ function Keyboard(props: Props) {
     }, 500);
   }
 
-  function getKeyboardStyle(): React.CSSProperties | undefined {
-    if (props.keyPress) {
-      return {
-        boxShadow: '0 0 1px black'
-      }
-    }
-  }
-
   return (
-    <div id="keyboard" ref={keyboardRef} style={getKeyboardStyle()} data-tauri-drag-region>
+    <div id="keyboard" data-tauri-drag-region>
       <div id="popupContainer" ref={popupContainerRef}></div>
     </div>
   );

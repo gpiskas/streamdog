@@ -45,11 +45,11 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "resizable": true,
         "title": "Streamy",
+        "fullscreen": false,
+        "resizable": false,
         "width": 400,
-        "height": 400,
+        "height": 350,
         "decorations": false,
         "transparent": true
       }
