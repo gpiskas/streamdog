@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
+import Mouse from '../Mouse/Mouse';
 
 function App() {
   const [displaySize, setDisplaySize] = useState<number[]>([0, 0]);
+  const [mousePosition, setMousePosition] = useState<number[]>([0, 0]);
   const [keyPressKey, setKeyPressKey] = useState('');
   const [keyPress, setKeyPress] = useState(false);
   const [buttonPress, setButtonPress] = useState(false);
-  const mousepadRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getDisplaySize();
@@ -29,11 +29,10 @@ function App() {
   async function registerListeners(): Promise<UnlistenFn[]> {
     console.log("registering listener");
     return [
-      await listen('MouseMove', event => handleMouseMove(event.payload as number[])),
-      await listen('ButtonPress', _ => handleButtonPress(true)),
-      await listen('ButtonRelease', _ => handleButtonPress(false)),
+      await listen('MouseMove', event => setMousePosition(event.payload as number[])),
+      await listen('ButtonPress', _ => setButtonPress(true)),
+      await listen('ButtonRelease', _ => setButtonPress(false)),
       await listen('KeyPress', event => {
-        console.log("KeyPress", event.payload);
         setKeyPressKey(event.payload as string);
         setKeyPress(true);
       }),
@@ -49,40 +48,14 @@ function App() {
     listenersPromise.then(listeners => listeners.forEach(listener => listener()));
   }
 
-  function handleMouseMove(mousePosition: number[]) {
-    if (mousepadRef.current && mouseRef.current) {
-      const [mouseX, mouseY] = mousePosition;
-      const [displayWidth, displayHeight] = displaySize;
-      const mouseWidthPercent = mouseX / displayWidth;
-      const mouseHeightPercent = mouseY / displayHeight;
-
-      const mousepad = mousepadRef.current;
-      const mousepadWidth = mousepad.clientWidth as number;
-      const mousepadHeight = mousepad.clientHeight as number;
-
-      const mouse = mouseRef.current;
-      mouse.style.left = mouseWidthPercent * mousepadWidth + "px";
-      mouse.style.top = mouseHeightPercent * mousepadHeight + "px";
-    }
-  }
-
-  function handleButtonPress(pressed: boolean) {
-    if (mouseRef.current) {
-      if (pressed) {
-        mouseRef.current.style.background = '#FFFFFF'
-      } else {
-        mouseRef.current.style.background = '#000000'
-      }
-    }
-  }
-
   return (
     <div id="container" data-tauri-drag-region>
       <div id="background" data-tauri-drag-region>
-        <div id="mousepad" ref={mousepadRef} data-tauri-drag-region>
-          <div id="mouse" ref={mouseRef} data-tauri-drag-region>
-          </div>
-        </div>
+        <Mouse
+          displaySize={displaySize}
+          mousePosition={mousePosition}
+          buttonPress={buttonPress}>
+        </Mouse>
         <div id="keyboard" data-tauri-drag-region>
 
         </div>
