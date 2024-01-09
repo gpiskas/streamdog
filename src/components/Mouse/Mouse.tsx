@@ -41,7 +41,7 @@ export default function Mouse(props: Props) {
     mouse.style.top = topOffset + "px";
     mouse.style.background = props.buttonPress ? 'grey' : 'white';
 
-    const mouseDeviceAngle = -(leftOffset/mousepadWidth - 0.5) * 60;
+    const mouseDeviceAngle = -(leftOffset / mousepadWidth - 0.5) * 40;
     mouseDevice.style.transform = `rotate(${mouseDeviceAngle}deg)`
     mouseDevice.style.filter = props.buttonPress ? 'brightness(0.7)' : 'brightness(1)';
   }
