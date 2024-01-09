@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import "./Keyboard.css";
 
 interface Props {
   keyPress: KeyPress | null
 }
 
-function Keyboard(props: Props) {
+export default function Keyboard(props: Props) {
   const popupContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (popupContainerRef.current && props.keyPress) {
       spawnKeyPressPopup(popupContainerRef.current, props.keyPress.key)
     }
@@ -30,10 +30,8 @@ function Keyboard(props: Props) {
 
   return (
     <div id="keyboard" data-tauri-drag-region>
-      <div id="popupContainer" ref={popupContainerRef}></div>
+      <div id="popupContainer" ref={popupContainerRef} data-tauri-drag-region></div>
     </div>
   );
 }
-
-export default Keyboard;
 

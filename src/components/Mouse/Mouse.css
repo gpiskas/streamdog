@@ -12,9 +12,32 @@
 #mouse {
   width: 4px;
   height: 4px;
+  top: 50%;
+  left: 50%;
   margin-left: -2px;
   margin-top: -2px;
   border-radius: 4px;
   background: white;
   position: relative;
+}
+
+#mouseArm {
+  position: absolute;
+  width: 50px;
+  height: 100px;
+  background: white;
+  top: 180px;
+  left: 100px;
+  border-radius: 4px;
+  transform-origin: center 20%;
+  background: url("../../assets/dog.png");
+  background-size: 100% 100%;
+}
+
+#mousePivot {
+  width: 1px;
+  height: 1px;
+  position: relative;
+  left: 50%;
+  top: 0%;
 }
