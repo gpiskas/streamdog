@@ -12,7 +12,7 @@ export default function Keyboard(props: Props) {
     if (popupContainerRef.current && props.keyPress) {
       spawnKeyPressPopup(popupContainerRef.current, props.keyPress.key)
     }
-  }, [popupContainerRef, props.keyPress])
+  }, [props])
 
   function spawnKeyPressPopup(popupContainer: HTMLDivElement, keyPress: string) {
     const containerWidth = popupContainer.clientWidth as number;

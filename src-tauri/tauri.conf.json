@@ -51,7 +51,8 @@
         "width": 400,
         "height": 350,
         "decorations": false,
-        "transparent": true
+        "transparent": true,
+        "alwaysOnTop": true
       }
     ]
   }

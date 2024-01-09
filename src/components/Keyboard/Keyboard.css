@@ -1,26 +1,22 @@
 #keyboard {
   width: 57%;
   height: 27%;
-  background: rgb(27, 27, 27);
-  border: 1px solid white;
   position: absolute;
   top: 73%;
   left: 39%;
-  transform: rotate3d(10, -3, 4, 68deg);
+  transform: rotate3d(16, -3, 5, 61deg);
 }
 
 #popupContainer {
   width: 100%;
   height: 100%;
   position: absolute;
-  top: -5px;
-  left: -5px;
   transform: rotate(180deg);
 }
 
 .popup {
   font-family: monospace;
-  font-size: 10px;
+  font-size: 12px;
   text-transform: capitalize;
   color: white;
   text-shadow: 0px 0 5px black;
