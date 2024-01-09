@@ -21,7 +21,6 @@ export default function App() {
 
   function getDisplaySize() {
     invoke('get_display_size').then(response => {
-      console.log("get_display_size", response);
       setDisplaySize(response as number[])
     });
   }

@@ -52,7 +52,7 @@
         "height": 350,
         "decorations": false,
         "transparent": true,
-        "alwaysOnTop": true
+        "alwaysOnTop": false
       }
     ]
   }

@@ -28,7 +28,7 @@ export default function Mouse(props: Props) {
       calculateMouseMovement(mousepad, mouse, mouseDevice);
       calculateArmMovement(mouse, armPivot, arm);
     }
-  }, [props]);
+  }, [props.displaySize, props.mousePosition, props.buttonPress]);
 
   function calculateMouseMovement(mousepad: HTMLDivElement, mouse: HTMLDivElement, mouseDevice: HTMLDivElement) {
     const [mouseX, mouseY] = props.mousePosition;

@@ -6,6 +6,7 @@ interface Props {
 }
 
 export default function Keyboard(props: Props) {
+  const prevKeyPress = useRef<KeyPress | null>(null);
   const popupContainerRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
@@ -14,15 +15,16 @@ export default function Keyboard(props: Props) {
     if (popupContainerRef.current
       && armRef.current
       && armPivotRef.current) {
-      onKeyPress(popupContainerRef.current, armRef.current, armPivotRef.current)
+      onKeyPress(popupContainerRef.current, armRef.current, armPivotRef.current);
+      prevKeyPress.current = props.keyPress;
     }
-  }, [props])
+  }, [props.keyPress])
 
   function onKeyPress(popupContainer: HTMLDivElement, arm: HTMLDivElement, armPivot: HTMLDivElement) {
     const containerHeight = popupContainer.clientHeight as number;
     const containerWidth = popupContainer.clientWidth as number;
 
-    if (props.keyPress) {
+    if (props.keyPress && prevKeyPress.current?.key != props.keyPress.key) {
       var popup = document.createElement("div");
       popup.style.top = Math.random() * containerHeight + 'px';
       popup.style.left = Math.random() * containerWidth + 'px';
