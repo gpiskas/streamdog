@@ -1,7 +1,7 @@
 [package]
-name = "streamy"
-version = "0.0.1"
-description = "Streamy brings your stream to life with interactive animations"
+name = "StreamBuddy"
+version = "1.0.0"
+description = "StreamBuddy"
 authors = ["Georgios Piskas"]
 license = ""
 repository = ""

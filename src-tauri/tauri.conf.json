@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "streamy",
-    "version": "0.0.0"
+    "productName": "StreamBuddy",
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -31,7 +31,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.gpiskas.streamy",
+      "identifier": "com.gpiskas.streambuddy",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -45,7 +45,7 @@
     },
     "windows": [
       {
-        "title": "Streamy",
+        "title": "StreamBuddy",
         "fullscreen": false,
         "resizable": false,
         "width": 400,
