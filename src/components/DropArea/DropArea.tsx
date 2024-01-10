@@ -17,21 +17,25 @@ export default function DropArea() {
   function onDrop(event: React.DragEvent<HTMLElement>): void {
     event.stopPropagation();
     event.preventDefault();
-    const dropElement = createDropElement(event);
-    makeElementsMovable(dropElement);
+    createDropElement(event);
   }
 
-  function createDropElement(event: React.DragEvent<HTMLElement>): HTMLElement {
-    var img = document.createElement("img");
-    img.style.top = event.clientY - 25 + 'px';
-    img.style.left = event.clientX - 25 + 'px';
-    img.src = window.URL.createObjectURL(event.dataTransfer.files[0]);
-    img.classList.add("droppedElement");
-    containerRef.current?.appendChild(img);
-    return img;
+  function createDropElement(event: React.DragEvent<HTMLElement>) {
+    const files = event.dataTransfer.files;
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].type.startsWith("image")) {
+        var img = document.createElement("img");
+        img.style.top = event.clientY - 25 + 'px';
+        img.style.left = event.clientX - 25 + 'px';
+        img.src = window.URL.createObjectURL(files[i]);
+        img.classList.add("droppedElement");
+        containerRef.current?.appendChild(img);
+        makeElementMovable(img);
+      }
+    }
   }
 
-  function makeElementsMovable(element: HTMLElement) {
+  function makeElementMovable(element: HTMLElement) {
     const moveable = new Moveable(containerRef.current as HTMLElement, {
       target: element,
       draggable: true,
@@ -62,7 +66,9 @@ export default function DropArea() {
 
   function removeMoveables() {
     moveables.forEach(moveable => {
-      moveable.getTargets()[0].classList.remove("moveable");
+      const element = moveable.getTargets()[0];
+      element.classList.remove("moveable");
+      element.setAttribute("data-tauri-drag-region", "true");
       moveable.destroy();
     });
     setMoveables([]);
@@ -70,7 +76,10 @@ export default function DropArea() {
 
   function addMovables() {
     document.querySelectorAll(".droppedElement:not(.moveable)")
-      .forEach(element => makeElementsMovable(element as HTMLElement));
+      .forEach(element => {
+        element.removeAttribute("data-tauri-drag-region");
+        makeElementMovable(element as HTMLElement)
+      });
   }
 
   function reset() {
