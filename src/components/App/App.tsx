@@ -1,9 +1,10 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
 import Mouse from '../Mouse/Mouse';
 import Keyboard from '../Keyboard/Keyboard';
+import DropArea from '../DropArea/DropArea';
 
 export default function App() {
   const [displaySize, setDisplaySize] = useState<number[]>([0, 0]);
@@ -26,7 +27,6 @@ export default function App() {
   }
 
   async function registerListeners(): Promise<UnlistenFn[]> {
-    console.log("registering listener");
     return [
       await listen('MouseMove', event => setMousePosition(event.payload as number[])),
       await listen('ButtonPress', _ => setButtonPress(true)),
@@ -41,7 +41,6 @@ export default function App() {
   }
 
   function unregisterListeners(listenersPromise: Promise<UnlistenFn[]>) {
-    console.log("unregistering listeners");
     listenersPromise.then(listeners => listeners.forEach(listener => listener()));
   }
 
@@ -54,6 +53,7 @@ export default function App() {
           buttonPress={buttonPress}>
         </Mouse>
         <Keyboard keyPress={keyPress}></Keyboard>
+        <DropArea></DropArea>
       </div>
     </div>
   );

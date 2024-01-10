@@ -1,0 +1,12 @@
+.droppedElement {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.xxx {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  margin: 10px;
+}

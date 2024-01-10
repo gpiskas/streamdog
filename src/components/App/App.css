@@ -4,3 +4,9 @@
   background-image: url("../../assets/dog.png");
   background-size: 100% 100%;
 }
+
+.droppedElement {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
