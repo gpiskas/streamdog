@@ -15,14 +15,17 @@
         "startDragging": true,
         "setAlwaysOnTop": true
       },
+      "process": {
+        "exit": true
+      },
       "fs": {
-        "readDir": true,
         "createDir": true,
-        "exists": true,
+        "removeDir": true,
         "readFile": true,
         "writeFile": true,
         "scope": [
-          "**"
+          "$APPCONFIG",
+          "$APPCONFIG/**"
         ]
       },
       "path": {
@@ -31,7 +34,8 @@
       "protocol": {
         "asset": true,
         "assetScope": [
-          "**"
+          "$APPCONFIG",
+          "$APPCONFIG/**"
         ]
       }
     },

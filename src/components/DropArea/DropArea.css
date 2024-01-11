@@ -16,3 +16,7 @@
   --contexify-arrow-color: #6f6e77;
   --contexify-activeArrow-color: #fff;
 }
+
+.contexify {
+  z-index: 9999;
+}
