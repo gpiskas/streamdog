@@ -11,27 +11,35 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
       "window": {
-        "all": false,
-        "close": true,
-        "hide": true,
-        "show": true,
-        "maximize": true,
-        "minimize": true,
-        "unmaximize": true,
-        "unminimize": true,
-        "startDragging": true
+        "startDragging": true,
+        "setAlwaysOnTop": true
+      },
+      "fs": {
+        "readDir": true,
+        "createDir": true,
+        "exists": true,
+        "readFile": true,
+        "writeFile": true,
+        "scope": [
+          "**"
+        ]
+      },
+      "path": {
+        "all": true
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": [
+          "**"
+        ]
       }
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": "msi",
       "identifier": "com.gpiskas.streambuddy",
+      "shortDescription": "StreamBuddy",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

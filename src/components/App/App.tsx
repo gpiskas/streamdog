@@ -32,7 +32,8 @@ export default function App() {
       await listen('ButtonPress', _ => setButtonPress(true)),
       await listen('ButtonRelease', _ => setButtonPress(false)),
       await listen('KeyPress', event => {
-        setKeyPress({ id: event.id, key: event.payload as string });
+        const payload = event.payload as string[];
+        setKeyPress({ id: event.id, key: payload[0], character: payload[1] });
       }),
       await listen('KeyRelease', _ => {
         setKeyPress(null);

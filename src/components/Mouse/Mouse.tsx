@@ -59,7 +59,7 @@ export default function Mouse(props: Props) {
     const topDiff = mouseTop - armTop;
 
     const angle = -Math.atan2(leftDiff, topDiff);
-    const distance = Math.sqrt(Math.pow(leftDiff, 2) + Math.pow(topDiff, 2));
+    const distance = Math.sqrt(Math.pow(leftDiff, 2) + Math.pow(topDiff, 2)) + 5;
     arm.style.transform = `rotate(${angle}rad)`;
     arm.style.height = distance + "px";
   }

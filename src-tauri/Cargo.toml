@@ -1,5 +1,5 @@
 [package]
-name = "StreamBuddy"
+name = "streambuddy"
 version = "1.0.0"
 description = "StreamBuddy"
 authors = ["Georgios Piskas"]
@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = [ "window-maximize", "window-unmaximize", "window-start-dragging", "window-hide", "window-close", "window-show", "window-minimize", "window-unminimize", "shell-open"] }
+tauri = { version = "1.5", features = [ "fs-exists", "path-all", "protocol-asset", "window-start-dragging", "fs-write-file", "fs-create-dir", "fs-read-dir", "fs-read-file", "window-set-always-on-top"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 rdev = "0.5.3"

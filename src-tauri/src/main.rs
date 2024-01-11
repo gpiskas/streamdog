@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use rdev::{Event, EventType};
+use rdev::{Event, EventType, Key};
 use tauri::{AppHandle, Manager};
 
 #[tauri::command]
@@ -10,35 +10,37 @@ fn get_display_size() -> (u64, u64) {
 }
 
 fn get_callback(app: AppHandle) -> impl FnMut(Event) {
-    return move |event: Event| {
-        // println!("My callback {:?}", app);
-        match event.event_type {
-            EventType::MouseMove { x, y } => {
-                app.emit_all("MouseMove", [x, y]).unwrap();
-            }
-            EventType::KeyPress(_key) => {
-                app.emit_all("KeyPress", event.name).unwrap();
-            }
-            EventType::KeyRelease(_key) => {
-                app.emit_all("KeyRelease", event.name).unwrap();
-            }
-            EventType::ButtonPress(_button) => {
-                app.emit_all("ButtonPress", true).unwrap();
-            }
-            EventType::ButtonRelease(_button) => {
-                app.emit_all("ButtonRelease", true).unwrap();
-            }
-            _ => {}
+    return move |event: Event| match event.event_type {
+        EventType::MouseMove { x, y } => {
+            app.emit_all("MouseMove", [x, y]).unwrap();
         }
+        EventType::KeyPress(key) => {
+            app.emit_all("KeyPress", get_key_press_payload(key, event))
+                .unwrap();
+        }
+        EventType::KeyRelease(key) => {
+            app.emit_all("KeyRelease", get_key_press_payload(key, event))
+                .unwrap();
+        }
+        EventType::ButtonPress(_button) => {
+            app.emit_all("ButtonPress", true).unwrap();
+        }
+        EventType::ButtonRelease(_button) => {
+            app.emit_all("ButtonRelease", true).unwrap();
+        }
+        _ => {}
     };
 }
 
+fn get_key_press_payload(key: Key, event: Event) -> (String, String) {
+    match event.name {
+        Some(name) => (format!("{:?}", key), name),
+        None => (format!("{:?}", key), "".to_owned()),
+    }
+}
+
 fn spawn_event_listener(app: AppHandle) {
-    tauri::async_runtime::spawn(async move {
-        if let Err(error) = rdev::listen(get_callback(app)) {
-            println!("Error: {:?}", error)
-        }
-    });
+    tauri::async_runtime::spawn(async { rdev::listen(get_callback(app)).unwrap() });
 }
 
 fn main() {
