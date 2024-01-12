@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import "./Keyboard.css";
 
 interface Props {
@@ -11,7 +11,7 @@ export default function Keyboard(props: Props) {
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (popupContainerRef.current
       && armRef.current
       && armPivotRef.current) {

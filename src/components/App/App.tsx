@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
@@ -12,7 +12,7 @@ export default function App() {
   const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
   const [buttonPress, setButtonPress] = useState<boolean>(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     getDisplaySize();
     const listenersPromise = registerListeners();
     return () => {
@@ -22,7 +22,7 @@ export default function App() {
 
   function getDisplaySize() {
     invoke('get_display_size').then(response => {
-      setDisplaySize(response as number[])
+      setDisplaySize(response as number[]);
     });
   }
 

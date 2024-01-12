@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Moveable from "moveable";
 import { Item, Menu, Separator, RightSlot, useContextMenu } from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
@@ -16,7 +16,7 @@ export default function DropArea() {
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const { show } = useContextMenu({ id: 'menu' });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     loadLayout();
   }, []);
 
@@ -170,8 +170,8 @@ export default function DropArea() {
         onDrop={onDrop}
         data-tauri-drag-region>
       </div>
-      <div data-tauri-drag-region>
-        <Menu id="menu">
+      <div data-tauri-drag-region onContextMenu={event => event.preventDefault()}>
+        <Menu id="menu" >
           <Item onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} image tools<RightSlot>🔧</RightSlot></Item>
           <Item onClick={_ => toggleAlwaysOnTop(!alwaysOnTopEnabled)}>{alwaysOnTopEnabled ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
           <Separator></Separator>

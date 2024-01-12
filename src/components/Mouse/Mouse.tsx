@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import "./Mouse.css";
 
 interface Props {
@@ -14,7 +14,7 @@ export default function Mouse(props: Props) {
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (mousepadRef.current
       && mouseRef.current
       && mouseDeviceRef.current
