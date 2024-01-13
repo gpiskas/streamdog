@@ -2,19 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App/App";
 import "./styles.css";
-import { ResourceContext, Resources, loadResources } from "./ResourceContext";
+import { loadResources } from "./ResourceContext";
 
-loadResources().then(resources => {
+loadResources().then(_ => {
   console.log("Resources loaded, rendering app");
-  renderApp(resources);
+  renderApp();
 })
 
-function renderApp(resources: Resources) {
+function renderApp() {
   ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-      <ResourceContext.Provider value={resources}>
-        <App></App>
-      </ResourceContext.Provider>
+      <App></App>
     </React.StrictMode>
   );
 }

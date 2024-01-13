@@ -1,13 +1,11 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import "./Keyboard.css";
-import { ResourceContext } from '../../ResourceContext';
 
 interface Props {
   keyPress: KeyPress | null
 }
 
 export default function Keyboard(props: Props) {
-  const resources = useContext(ResourceContext);
   const prevKeyPress = useRef<KeyPress | null>(null);
   const popupContainerRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
@@ -182,7 +180,7 @@ export default function Keyboard(props: Props) {
       <div id="keyboard" data-tauri-drag-region>
         <div id="popupContainer" ref={popupContainerRef} data-tauri-drag-region></div>
       </div>
-      <div id="keyboardArm" ref={armRef} style={{ backgroundImage: resources.armUrl }} data-tauri-drag-region>
+      <div id="keyboardArm" ref={armRef} data-tauri-drag-region>
         <div id="keyboardArmPivot" ref={armPivotRef} data-tauri-drag-region></div>
       </div>
     </div>

@@ -17,7 +17,7 @@
   position: absolute;
   top: -50px;
   left: -40px;
-  /* background-image set dynamically in main.tsx; */
+  /* background-image set dynamically at startup; */
   background-size: 100% 100%;
 }
 
@@ -28,7 +28,7 @@
   top: 180px;
   left: 100px;
   transform-origin: center 10%;
-  /* background-image set dynamically in main.tsx; */
+  /* background-image set dynamically at startup; */
   background-size: 100% 100%;
 }
 

@@ -14,7 +14,7 @@
   top: 215px;
   left: 250px;
   transform-origin: center 10%;
-  /* background-image set dynamically in main.tsx; */
+  /* background-image set dynamically at startup; */
   background-size: 100% 100%;
   transform: rotate(20deg);
   transition-duration: 50ms;

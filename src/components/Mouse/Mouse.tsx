@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import "./Mouse.css";
-import { ResourceContext } from '../../ResourceContext';
 
 interface Props {
   displaySize: number[]
@@ -9,7 +8,6 @@ interface Props {
 }
 
 export default function Mouse(props: Props) {
-  const resources = useContext(ResourceContext);
   const mousepadRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<HTMLDivElement>(null);
   const mouseDeviceRef = useRef<HTMLDivElement>(null);
@@ -70,10 +68,10 @@ export default function Mouse(props: Props) {
     <div className="container" data-tauri-drag-region>
       <div id="mousepad" ref={mousepadRef} data-tauri-drag-region>
         <div id="mouse" ref={mouseRef} data-tauri-drag-region>
-          <div id="mouseDevice" ref={mouseDeviceRef} style={{ backgroundImage: resources.mouseUrl }} data-tauri-drag-region></div>
+          <div id="mouseDevice" ref={mouseDeviceRef} data-tauri-drag-region></div>
         </div>
       </div>
-      <div id="mouseArm" ref={armRef} style={{ backgroundImage: resources.armUrl }} data-tauri-drag-region>
+      <div id="mouseArm" ref={armRef} data-tauri-drag-region>
         <div id="mouseArmPivot" ref={armPivotRef} data-tauri-drag-region></div>
       </div>
     </div>

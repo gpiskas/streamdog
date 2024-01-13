@@ -1,14 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UnlistenFn, listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri';
 import "./App.css";
 import Mouse from '../Mouse/Mouse';
 import Keyboard from '../Keyboard/Keyboard';
 import DropArea from '../DropArea/DropArea';
-import { ResourceContext } from '../../ResourceContext';
 
 export default function App() {
-  const resources = useContext(ResourceContext);
   const [displaySize, setDisplaySize] = useState<number[]>([0, 0]);
   const [mousePosition, setMousePosition] = useState<number[]>([0, 0]);
   const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
@@ -49,7 +47,7 @@ export default function App() {
 
   return (
     <div className="container" data-tauri-drag-region>
-      <div id="background" style={{ backgroundImage: resources.backgroundUrl }} data-tauri-drag-region>
+      <div id="background" data-tauri-drag-region>
         <Mouse
           displaySize={displaySize}
           mousePosition={mousePosition}

@@ -1,26 +1,17 @@
-import { createContext } from 'react';
 import { resolveResource } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
-export interface Resources {
-    backgroundUrl: string
-    mouseUrl: string
-    armUrl: string
-}
-
-export const ResourceContext = createContext<Resources>({} as Resources);
-
-export function loadResources(): Promise<Resources> {
+export function loadResources(): Promise<void> {
     return Promise.all([
         resolve("resources/background.png"),
         resolve("resources/mouse.png"),
         resolve("resources/arm.png"),
     ]).then(res => {
-        return {
-            backgroundUrl: res[0],
-            mouseUrl: res[1],
-            armUrl: res[2],
-        } as Resources;
+        var sheet = document.styleSheets[document.styleSheets.length - 1];
+        sheet.insertRule(`#background { background-image: ${res[0]} }`, 0);
+        sheet.insertRule(`#mouseDevice { background-image: ${res[1]} }`, 0);
+        sheet.insertRule(`#mouseArm { background-image: ${res[2]} }`, 0);
+        sheet.insertRule(`#keyboardArm { background-image: ${res[2]} }`, 0);
     });
 }
 

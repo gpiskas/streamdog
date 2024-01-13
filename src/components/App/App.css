@@ -1,6 +1,6 @@
 #background {
   width: 100%;
   height: 100%;
-  /* background-image set dynamically in main.tsx; */
+  /* background-image set dynamically at startup; */
   background-size: 100% 100%;
 }
