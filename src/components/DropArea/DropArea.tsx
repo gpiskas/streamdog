@@ -133,7 +133,6 @@ export default function DropArea() {
       .then(innerHTML => {
         const container = dropAreaRef.current as HTMLElement;
         container.innerHTML = innerHTML;
-        toggleTools(true);
       });
   }
 
@@ -156,8 +155,12 @@ export default function DropArea() {
     });
   }
 
-  async function openSupportLink() {
+  function openSupportLink() {
     open("https://ko-fi.com/gpiskas");
+  }
+
+  function noDroppedElement() {
+    return document.querySelectorAll(".droppedElement").length == 0;
   }
 
   return (
@@ -176,10 +179,10 @@ export default function DropArea() {
           <Item onClick={_ => openResource("resources")}>Customize<RightSlot>🎬</RightSlot></Item>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
           <Separator></Separator>
-          <Item onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} layout tools<RightSlot>🔧</RightSlot></Item>
-          <Item onClick={saveLayout}>Save layout<RightSlot>📸</RightSlot></Item>
-          <Item onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
-          <Item onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
+          <Item disabled={noDroppedElement} onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} layout tools<RightSlot>🔧</RightSlot></Item>
+          <Item disabled={noDroppedElement} onClick={saveLayout}>Save layout<RightSlot>📸</RightSlot></Item>
+          <Item disabled={noDroppedElement} onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
+          <Item disabled={noDroppedElement} onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
           <Separator></Separator>
           <Item onClick={_ => toggleAlwaysOnTop(!alwaysOnTopEnabled)}>{alwaysOnTopEnabled ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
           <Item onClick={reload}>Reload<RightSlot>🔄</RightSlot></Item>
