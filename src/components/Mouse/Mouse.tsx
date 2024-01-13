@@ -1,22 +1,20 @@
+import "./Mouse.css";
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GlobalContext } from '../../GlobalContext';
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
-import "./Mouse.css";
 
 export default function Mouse() {
   const context = useContext(GlobalContext);
-
   const [mousePosition, setMousePosition] = useState<number[]>([0, 0]);
   const [buttonPress, setButtonPress] = useState<boolean>(false);
-
   const mousepadRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<HTMLDivElement>(null);
   const mouseDeviceRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
 
-  useEffect(listenToMouseEvents);
+  useEffect(listenToMouseEvents, []);
   useLayoutEffect(onMouseEvent, [mousePosition, buttonPress]);
 
   function listenToMouseEvents() {

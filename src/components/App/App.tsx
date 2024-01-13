@@ -1,7 +1,7 @@
+import "./App.css";
 import Mouse from '../Mouse/Mouse';
 import Keyboard from '../Keyboard/Keyboard';
 import DropArea from '../DropArea/DropArea';
-import "./App.css";
 
 export default function App() {
   return (

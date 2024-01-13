@@ -21,6 +21,7 @@
       "fs": {
         "createDir": true,
         "removeDir": true,
+        "exists": true,
         "readFile": true,
         "writeFile": true,
         "scope": [
