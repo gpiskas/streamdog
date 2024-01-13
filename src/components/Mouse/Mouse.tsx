@@ -1,67 +1,60 @@
-import { useContext, useEffect, useRef } from 'react';
-import "./Mouse.css";
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GlobalContext } from '../../GlobalContext';
+import { listen } from '@tauri-apps/api/event';
+import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
+import "./Mouse.css";
 
-interface Props {
-  mousePosition: number[]
-  buttonPress: boolean
-}
-
-export default function Mouse(props: Props) {
+export default function Mouse() {
   const context = useContext(GlobalContext);
+
+  const [mousePosition, setMousePosition] = useState<number[]>([0, 0]);
+  const [buttonPress, setButtonPress] = useState<boolean>(false);
+
   const mousepadRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<HTMLDivElement>(null);
   const mouseDeviceRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (mousepadRef.current
-      && mouseRef.current
-      && mouseDeviceRef.current
-      && armRef.current
-      && armPivotRef.current) {
-      const mousepad = mousepadRef.current;
-      const mouse = mouseRef.current;
-      const mouseDevice = mouseDeviceRef.current;
-      const armPivot = armPivotRef.current;
-      const arm = armRef.current;
-      calculateMouseMovement(mousepad, mouse, mouseDevice);
-      calculateArmMovement(mouse, armPivot, arm);
-    }
-  }, [props.mousePosition, props.buttonPress]);
+  useEffect(listenToMouseEvents);
+  useLayoutEffect(onMouseEvent, [mousePosition, buttonPress]);
 
+  function listenToMouseEvents() {
+    return registerListeners(
+      listen('MouseMove', event => setMousePosition(event.payload as number[])),
+      listen('ButtonPress', _ => setButtonPress(true)),
+      listen('ButtonRelease', _ => setButtonPress(false)),
+    );
+  }
 
-  function calculateMouseMovement(mousepad: HTMLDivElement, mouse: HTMLDivElement, mouseDevice: HTMLDivElement) {
-    const [mouseX, mouseY] = props.mousePosition;
+  function onMouseEvent() {
+    calculateMouseMovement();
+    calculateArmMovement();
+  }
+
+  function calculateMouseMovement() {
+    const [mouseX, mouseY] = mousePosition;
     const [displayWidth, displayHeight] = context.displaySize;
+    const mousepad = mousepadRef.current as HTMLDivElement;
     const mousepadWidth = mousepad.clientWidth as number;
     const mousepadHeight = mousepad.clientHeight as number;
     const leftOffset = mousepadWidth - (mouseX / displayWidth) * mousepadWidth;
     const topOffset = mousepadHeight - (mouseY / displayHeight) * mousepadHeight;
+    const mouse = mouseRef.current as HTMLDivElement;
     mouse.style.left = leftOffset + "px";
     mouse.style.top = topOffset + "px";
-    mouse.style.background = props.buttonPress ? 'grey' : 'white';
-
+    mouse.style.background = buttonPress ? 'grey' : 'white';
+    const mouseDevice = mouseDeviceRef.current as HTMLDivElement;
     const mouseDeviceAngle = -(leftOffset / mousepadWidth - 0.5) * 40;
     mouseDevice.style.transform = `rotate(${mouseDeviceAngle}deg)`
-    mouseDevice.style.filter = props.buttonPress ? 'brightness(0.7)' : 'brightness(1)';
+    mouseDevice.style.filter = buttonPress ? 'brightness(0.7)' : 'brightness(1)';
   }
 
-  function calculateArmMovement(mouse: HTMLDivElement, armPivot: HTMLDivElement, arm: HTMLDivElement) {
-    const mouseRect = mouse.getBoundingClientRect();
-    const mouseLeft = mouseRect.left;
-    const mouseTop = mouseRect.top;
-
-    const armPivotRect = armPivot.getBoundingClientRect();
-    const armLeft = armPivotRect.left;
-    const armTop = armPivotRect.top;
-
-    const leftDiff = mouseLeft - armLeft;
-    const topDiff = mouseTop - armTop;
-
-    const angle = -Math.atan2(leftDiff, topDiff);
-    const distance = Math.sqrt(Math.pow(leftDiff, 2) + Math.pow(topDiff, 2)) + 5;
+  function calculateArmMovement() {
+    const [left, top] = getRectDistance(mouseRef.current as HTMLElement, armPivotRef.current as HTMLElement)
+    const angle = -getRadAngle(left, top);
+    const distance = getDistance(left, top) + 5;
+    const arm = armRef.current as HTMLDivElement;
     arm.style.transform = `rotate(${angle}rad)`;
     arm.style.height = distance + "px";
   }

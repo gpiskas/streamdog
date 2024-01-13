@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { listen } from '@tauri-apps/api/event';
+import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
+import { getKeyPressCharacter } from './keymap';
 import "./Keyboard.css";
-import { UnlistenFn, listen } from '@tauri-apps/api/event';
-import { unregisterListeners } from '../../utils';
 
-interface KeyPress {
+export interface KeyPress {
   id: number
   key: string
   character: string
@@ -13,62 +14,30 @@ interface KeyPress {
 export default function Keyboard() {
   const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
 
-  const popupContainerRef = useRef<HTMLDivElement>();
-  const armRef = useRef<HTMLDivElement>();
-  const armPivotRef = useRef<HTMLDivElement>();
+  const popupContainerRef = useRef<HTMLDivElement>(null);
+  const armRef = useRef<HTMLDivElement>(null);
+  const armPivotRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const listenersPromise = registerListeners();
-    return () => {
-      unregisterListeners(listenersPromise)
-    }
-  }, []);
+  useEffect(listenToKeyboardEvents);
+  useLayoutEffect(onKeyboardEvent, [keyPress]);
 
-  async function registerListeners(): Promise<UnlistenFn[]> {
-    return [
-      await listen('KeyPress', event => {
+  function listenToKeyboardEvents() {
+    return registerListeners(
+      listen('KeyPress', event => {
         const payload = event.payload as string[];
         setKeyPress(previous => ({ id: event.id, key: payload[0], character: payload[1], previous: previous }))
       }),
-      await listen('KeyRelease', _ => {
-        setKeyPress(null);
-      })
-    ];
+      listen('KeyRelease', _ => setKeyPress(null))
+    );
   }
 
-  useLayoutEffect(() => {
-    //@ts-ignore
-    onKeyPress(popupContainerRef.current, armRef.current, armPivotRef.current);
-  }, [keyPress]);
-
-  function onKeyPress(popupContainer: HTMLDivElement, arm: HTMLDivElement, armPivot: HTMLDivElement) {
-    const containerHeight = popupContainer.clientHeight as number;
-    const containerWidth = popupContainer.clientWidth as number;
-
+  function onKeyboardEvent() {
+    const arm = armRef.current as HTMLDivElement;
     if (keyPress && keyPress.previous?.key != keyPress.key) {
-      var popup = document.createElement("div");
-      popup.style.top = Math.random() * containerHeight + 'px';
-      popup.style.left = Math.random() * containerWidth + 'px';
-      popup.className = "popup";
-      popup.innerText = getKeyPressCharacter(keyPress);
-      popupContainer.appendChild(popup);
-      setTimeout(() => {
-        popup.remove();
-      }, 500);
-
-      const popupRect = popup.getBoundingClientRect();
-      const popupLeft = popupRect.left;
-      const popupTop = popupRect.top;
-
-      const armPivotRect = armPivot.getBoundingClientRect();
-      const armLeft = armPivotRect.left;
-      const armTop = armPivotRect.top;
-
-      const leftDiff = popupLeft - armLeft;
-      const topDiff = popupTop - armTop;
-
-      const angle = -Math.atan2(leftDiff, topDiff);
-      const distance = Math.sqrt(Math.pow(leftDiff, 2) + Math.pow(topDiff, 2)) + 10;
+      const popup = createPopup(keyPress);
+      const [left, top] = getRectDistance(popup, armPivotRef.current as HTMLElement)
+      const angle = -getRadAngle(left, top);
+      const distance = getDistance(left, top) + 10;
       arm.style.transform = `rotate(${angle}rad)`;
       arm.style.height = distance + "px";
     } else {
@@ -77,123 +46,18 @@ export default function Keyboard() {
     }
   }
 
-  function getKeyPressCharacter(keyPress: KeyPress) {
-    if (keyPress.character.length == 1) {
-      return keyPress.character;
-    }
-    switch (keyPress.key) {
-      //       /// Alt key on Linux and Windows (option key on macOS)
-      // Alt,
-      // AltGr,
-      // Backspace,
-      // CapsLock,
-      // ControlLeft,
-      // ControlRight,
-      // Delete,
-      // DownArrow,
-      // End,
-      // Escape,
-      // F1,
-      // F10,
-      // F11,
-      // F12,
-      // F2,
-      // F3,
-      // F4,
-      // F5,
-      // F6,
-      // F7,
-      // F8,
-      // F9,
-      // Home,
-      // LeftArrow,
-      // /// also known as "windows", "super", and "command"
-      // MetaLeft,
-      // /// also known as "windows", "super", and "command"
-      // MetaRight,
-      // PageDown,
-      // PageUp,
-      // Return,
-      // RightArrow,
-      // ShiftLeft,
-      // ShiftRight,
-      // Space,
-      // Tab,
-      // UpArrow,
-      // PrintScreen,
-      // ScrollLock,
-      // Pause,
-      // NumLock,
-      // BackQuote,
-      // Num1,
-      // Num2,
-      // Num3,
-      // Num4,
-      // Num5,
-      // Num6,
-      // Num7,
-      // Num8,
-      // Num9,
-      // Num0,
-      // Minus,
-      // Equal,
-      // KeyQ,
-      // KeyW,
-      // KeyE,
-      // KeyR,
-      // KeyT,
-      // KeyY,
-      // KeyU,
-      // KeyI,
-      // KeyO,
-      // KeyP,
-      // LeftBracket,
-      // RightBracket,
-      // KeyA,
-      // KeyS,
-      // KeyD,
-      // KeyF,
-      // KeyG,
-      // KeyH,
-      // KeyJ,
-      // KeyK,
-      // KeyL,
-      // SemiColon,
-      // Quote,
-      // BackSlash,
-      // IntlBackslash,
-      // KeyZ,
-      // KeyX,
-      // KeyC,
-      // KeyV,
-      // KeyB,
-      // KeyN,
-      // KeyM,
-      // Comma,
-      // Dot,
-      // Slash,
-      // Insert,
-      // KpReturn,
-      // KpMinus,
-      // KpPlus,
-      // KpMultiply,
-      // KpDivide,
-      // Kp0,
-      // Kp1,
-      // Kp2,
-      // Kp3,
-      // Kp4,
-      // Kp5,
-      // Kp6,
-      // Kp7,
-      // Kp8,
-      // Kp9,
-      // KpDelete,
-      // Function,
-      // Unknown(u32),
-      // TODO handle characters
-    }
-    return '*';
+  function createPopup(keyPress: KeyPress) {
+    const container = popupContainerRef.current as HTMLDivElement;
+    const containerHeight = container.clientHeight as number;
+    const containerWidth = container.clientWidth as number;
+    const popup = document.createElement("div");
+    popup.style.top = Math.random() * containerHeight + 'px';
+    popup.style.left = Math.random() * containerWidth + 'px';
+    popup.className = "popup";
+    popup.innerText = getKeyPressCharacter(keyPress);
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 500);
+    return popup;
   }
 
   return (
