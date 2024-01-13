@@ -1,13 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import "./Mouse.css";
+import { GlobalContext } from '../../GlobalContext';
 
 interface Props {
-  displaySize: number[]
   mousePosition: number[]
   buttonPress: boolean
 }
 
 export default function Mouse(props: Props) {
+  const context = useContext(GlobalContext);
   const mousepadRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<HTMLDivElement>(null);
   const mouseDeviceRef = useRef<HTMLDivElement>(null);
@@ -28,11 +29,12 @@ export default function Mouse(props: Props) {
       calculateMouseMovement(mousepad, mouse, mouseDevice);
       calculateArmMovement(mouse, armPivot, arm);
     }
-  }, [props.displaySize, props.mousePosition, props.buttonPress]);
+  }, [props.mousePosition, props.buttonPress]);
+
 
   function calculateMouseMovement(mousepad: HTMLDivElement, mouse: HTMLDivElement, mouseDevice: HTMLDivElement) {
     const [mouseX, mouseY] = props.mousePosition;
-    const [displayWidth, displayHeight] = props.displaySize;
+    const [displayWidth, displayHeight] = context.displaySize;
     const mousepadWidth = mousepad.clientWidth as number;
     const mousepadHeight = mousepad.clientHeight as number;
     const leftOffset = mousepadWidth - (mouseX / displayWidth) * mousepadWidth;

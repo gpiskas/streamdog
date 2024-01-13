@@ -1,5 +1,6 @@
 import { resolveResource } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
+import { GlobalContextData } from "./GlobalContext";
 
 export function loadResources(): Promise<void> {
     return Promise.all([
@@ -17,4 +18,14 @@ export function loadResources(): Promise<void> {
 
 function resolve(path: string): Promise<string> {
     return resolveResource(path).then(res => `url(${convertFileSrc(res)})`);
+}
+
+export function loadContextData(): Promise<GlobalContextData> {
+    return Promise.all([
+        invoke('get_display_size'),
+    ]).then(res => {
+        return {
+            displaySize: res[0] as number[]
+        } as GlobalContextData;
+    });
 }
