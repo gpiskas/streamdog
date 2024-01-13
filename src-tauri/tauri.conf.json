@@ -18,6 +18,9 @@
       "process": {
         "exit": true
       },
+      "shell": {
+        "open": ".+"
+      },  
       "fs": {
         "createDir": true,
         "removeDir": true,

@@ -24,7 +24,7 @@ export default function Keyboard() {
     return registerListeners(
       listen('KeyPress', event => {
         const payload = event.payload as string[];
-        setKeyPress(previous => ({ id: event.id, key: payload[0], character: payload[1], previous: previous }))
+        setKeyPress(previous => ({ id: event.id, key: payload[0], character: payload[1], previous: previous }));
       }),
       listen('KeyRelease', _ => setKeyPress(null))
     );
@@ -34,14 +34,14 @@ export default function Keyboard() {
     const arm = armRef.current as HTMLDivElement;
     if (keyPress && keyPress.previous?.key != keyPress.key) {
       const popup = createPopup(keyPress);
-      const [left, top] = getRectDistance(popup, armPivotRef.current as HTMLElement)
+      const [left, top] = getRectDistance(popup, armPivotRef.current as HTMLElement);
       const angle = -getRadAngle(left, top);
       const distance = getDistance(left, top) + 10;
       arm.style.transform = `rotate(${angle}rad)`;
       arm.style.height = distance + "px";
     } else {
       arm.style.transform = 'rotate(20deg)';
-      arm.style.height = '100px'
+      arm.style.height = '100px';
     }
   }
 

@@ -41,17 +41,17 @@ export default function Mouse() {
     const mouse = mouseRef.current as HTMLDivElement;
     mouse.style.left = leftOffset + "px";
     mouse.style.top = topOffset + "px";
-    mouse.style.background = buttonPress ? 'grey' : 'white';
     const mouseDevice = mouseDeviceRef.current as HTMLDivElement;
-    const mouseDeviceAngle = -(leftOffset / mousepadWidth - 0.5) * 40;
-    mouseDevice.style.transform = `rotate(${mouseDeviceAngle}deg)`
+    const mouseDeviceAngle = -(leftOffset / mousepadWidth - 0.5) * 50;
+    const mouseDeviceScale = (topOffset / mousepadHeight) * 0.1 + 0.9;
+    mouseDevice.style.transform = `rotate(${mouseDeviceAngle}deg) scale(${mouseDeviceScale})`;
     mouseDevice.style.filter = buttonPress ? 'brightness(0.7)' : 'brightness(1)';
   }
 
   function calculateArmMovement() {
-    const [left, top] = getRectDistance(mouseRef.current as HTMLElement, armPivotRef.current as HTMLElement)
+    const [left, top] = getRectDistance(mouseRef.current as HTMLElement, armPivotRef.current as HTMLElement);
     const angle = -getRadAngle(left, top);
-    const distance = getDistance(left, top) + 5;
+    const distance = getDistance(left, top) + 15;
     const arm = armRef.current as HTMLDivElement;
     arm.style.transform = `rotate(${angle}rad)`;
     arm.style.height = distance + "px";

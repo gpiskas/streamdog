@@ -1,27 +1,36 @@
 import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Moveable from "moveable";
 import { Item, Menu, Separator, RightSlot, useContextMenu } from 'react-contexify';
 import { appWindow } from '@tauri-apps/api/window';
 import { BaseDirectory, createDir, exists, readTextFile, removeDir, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { appConfigDir } from '@tauri-apps/api/path';
+import { appConfigDir, resourceDir } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exit } from '@tauri-apps/api/process';
-import { preventDefault } from "../../utils";
+import { preventDefault, registerListeners } from "../../utils";
+import { open } from "@tauri-apps/api/shell";
 
 export default function DropArea() {
   const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
+  const [windowFocused, setWindowFocused] = useState<boolean>();
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(false);
   const [moveables, setMoveables] = useState<Moveable[]>([]);
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const { show, hideAll } = useContextMenu({ id: 'menu' });
 
-  useEffect(loadLayout, []);
+  useEffect(listenToWindowFocus, []);
+  useLayoutEffect(loadLayout, []);
+
+  function listenToWindowFocus() {
+    appWindow.isFocused().then(focused => setWindowFocused(focused));
+    return registerListeners(
+      appWindow.onFocusChanged(({ payload: focused }) => setWindowFocused(focused))
+    );
+  }
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
     preventDefault(event);
-    createDropElement(event);
     const files = event.dataTransfer.files;
     const dropArea = dropAreaRef.current as HTMLElement;
     for (let i = 0; i < files.length; i++) {
@@ -30,7 +39,7 @@ export default function DropArea() {
           const img = document.createElement("img");
           img.style.top = event.clientY - 25 + 'px';
           img.style.left = event.clientX - 25 + 'px';
-          img.src = convertFileSrc(path)
+          img.src = convertFileSrc(path);
           img.classList.add("droppedElement");
           dropArea.appendChild(img);
           makeElementMovable(img);
@@ -70,6 +79,7 @@ export default function DropArea() {
       moveable.destroy();
     });
     setMoveables([]);
+    setToolsEnabled(false);
   }
 
   function addMovables() {
@@ -83,7 +93,6 @@ export default function DropArea() {
     } else {
       removeMoveables();
     }
-    setToolsEnabled(toggle);
   }
 
   function toggleAlwaysOnTop(toggle: boolean) {
@@ -124,6 +133,7 @@ export default function DropArea() {
       .then(innerHTML => {
         const container = dropAreaRef.current as HTMLElement;
         container.innerHTML = innerHTML;
+        toggleTools(true);
       });
   }
 
@@ -140,6 +150,16 @@ export default function DropArea() {
     exit(1);
   }
 
+  function openResource(resource: string) {
+    resourceDir().then(dir => {
+      open(dir + resource)
+    });
+  }
+
+  async function openSupportLink() {
+    open("https://ko-fi.com/gpiskas");
+  }
+
   return (
     <div className="container">
       <div className="container"
@@ -152,17 +172,24 @@ export default function DropArea() {
       </div>
       <div onContextMenu={event => event.preventDefault()}>
         <Menu id="menu">
-          <Item onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} image tools<RightSlot>🔧</RightSlot></Item>
-          <Item onClick={_ => toggleAlwaysOnTop(!alwaysOnTopEnabled)}>{alwaysOnTopEnabled ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
+          <Item onClick={_ => openResource("resources\\README.txt")}>Info & instructions<RightSlot>🚀</RightSlot></Item>
+          <Item onClick={_ => openResource("resources")}>Customize<RightSlot>🎬</RightSlot></Item>
+          <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
           <Separator></Separator>
+          <Item onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} layout tools<RightSlot>🔧</RightSlot></Item>
           <Item onClick={saveLayout}>Save layout<RightSlot>📸</RightSlot></Item>
           <Item onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
           <Item onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
           <Separator></Separator>
+          <Item onClick={_ => toggleAlwaysOnTop(!alwaysOnTopEnabled)}>{alwaysOnTopEnabled ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
           <Item onClick={reload}>Reload<RightSlot>🔄</RightSlot></Item>
           <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
         </Menu>
       </div>
+      {windowFocused && <div id="menuButton"
+        onContextMenu={event => show({ event })}
+        onClick={event => show({ event })}>🍔</div>
+      }
     </div>
   );
 }
