@@ -13,7 +13,7 @@ export default function DropArea() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [moveables, setMoveables] = useState<Moveable[]>([]);
   const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
-  const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
+  const [toolsEnabled, setToolsEnabled] = useState<boolean>(false);
   const { show } = useContextMenu({ id: 'menu' });
 
   useEffect(() => {
@@ -39,7 +39,6 @@ export default function DropArea() {
           var img = document.createElement("img");
           img.style.top = event.clientY - 25 + 'px';
           img.style.left = event.clientX - 25 + 'px';
-          console.log(convertFileSrc(path))
           img.src = convertFileSrc(path)
           img.classList.add("droppedElement");
           containerRef.current?.appendChild(img);
@@ -76,6 +75,7 @@ export default function DropArea() {
     setMoveables([...moveables, moveable]);
     moveables.push(moveable);
     element.classList.add("moveable");
+    setToolsEnabled(true);
   }
 
   function removeMoveables() {
@@ -143,7 +143,6 @@ export default function DropArea() {
       .then(_ => readTextFile('dropArea.html', { dir: BaseDirectory.AppConfig }).then(innerHTML => {
         if (containerRef.current) {
           containerRef.current.innerHTML = innerHTML;
-          toggleTools(true);
         }
       }));
   }

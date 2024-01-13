@@ -14,7 +14,7 @@
   top: 215px;
   left: 250px;
   transform-origin: center 10%;
-  background: url("../../assets/arm.png");
+  /* background-image set dynamically in main.tsx; */
   background-size: 100% 100%;
   transform: rotate(20deg);
   transition-duration: 50ms;

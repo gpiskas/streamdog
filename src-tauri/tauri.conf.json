@@ -24,6 +24,8 @@
         "readFile": true,
         "writeFile": true,
         "scope": [
+          "$RESOURCE",
+          "$RESOURCE/**",
           "$APPCONFIG",
           "$APPCONFIG/**"
         ]
@@ -34,6 +36,8 @@
       "protocol": {
         "asset": true,
         "assetScope": [
+          "$RESOURCE",
+          "$RESOURCE/**",
           "$APPCONFIG",
           "$APPCONFIG/**"
         ]
@@ -41,7 +45,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": "msi",
+      "targets": "nsis",
       "identifier": "com.gpiskas.streambuddy",
       "shortDescription": "StreamBuddy",
       "icon": [
@@ -50,6 +54,9 @@
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
+      ],
+      "resources": [
+        "resources/*"
       ]
     },
     "security": {

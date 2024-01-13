@@ -17,7 +17,7 @@
   position: absolute;
   top: -50px;
   left: -40px;
-  background: url("../../assets/mouse.png");
+  /* background-image set dynamically in main.tsx; */
   background-size: 100% 100%;
 }
 
@@ -28,7 +28,7 @@
   top: 180px;
   left: 100px;
   transform-origin: center 10%;
-  background: url("../../assets/arm.png");
+  /* background-image set dynamically in main.tsx; */
   background-size: 100% 100%;
 }
 
