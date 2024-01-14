@@ -29,4 +29,6 @@
   cursor: pointer;
   text-shadow: 0px 0px 3px black;
   user-select: none;
+  bottom: 0;
+  margin: 2px;
 }

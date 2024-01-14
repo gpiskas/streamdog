@@ -149,9 +149,10 @@ export default function DropArea() {
     exit(1);
   }
 
-  function openResource(resource: string) {
+  function openInfo() {
     resourceDir().then(dir => {
-      open(dir + resource)
+      open(dir + "skins\\README.txt")
+      open(dir + "skins")
     });
   }
 
@@ -175,8 +176,7 @@ export default function DropArea() {
       </div>
       <div onContextMenu={event => event.preventDefault()}>
         <Menu id="menu">
-          <Item onClick={_ => openResource("resources\\README.txt")}>Info & instructions<RightSlot>🚀</RightSlot></Item>
-          <Item onClick={_ => openResource("resources")}>Customize<RightSlot>🎬</RightSlot></Item>
+          <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
           <Separator></Separator>
           <Item disabled={noDroppedElement} onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} layout tools<RightSlot>🔧</RightSlot></Item>

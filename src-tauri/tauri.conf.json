@@ -60,7 +60,7 @@
         "icons/icon.ico"
       ],
       "resources": [
-        "resources/*"
+        "skins/*"
       ]
     },
     "security": {

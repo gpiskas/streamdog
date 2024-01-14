@@ -2,12 +2,12 @@ import { resolveResource } from "@tauri-apps/api/path";
 import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
 import { GlobalContextData } from "./GlobalContext";
 
-export function loadResources(): Promise<void> {
+export function loadSkin(): Promise<void> {
     return Promise.all([
-        resolve("resources/background.png"),
-        resolve("resources/mouse.png"),
-        resolve("resources/mouseArm.png"),
-        resolve("resources/keyboardArm.png"),
+        resolve("skins/dog/background.png"),
+        resolve("skins/dog/mouse.png"),
+        resolve("skins/dog/mouseArm.png"),
+        resolve("skins/dog/keyboardArm.png"),
     ]).then(res => {
         const sheet = document.styleSheets[document.styleSheets.length - 1];
         sheet.insertRule(`#background { background-image: ${res[0]} }`, 0);

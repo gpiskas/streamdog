@@ -46,14 +46,15 @@ export default function Keyboard() {
   }
 
   function createPopup(keyPress: KeyPress) {
+    const keyData = getKeyPressCharacter(keyPress);
     const container = popupContainerRef.current as HTMLDivElement;
     const containerHeight = container.clientHeight as number;
     const containerWidth = container.clientWidth as number;
     const popup = document.createElement("div");
-    popup.style.top = Math.random() * containerHeight + 'px';
-    popup.style.left = Math.random() * containerWidth + 'px';
+    popup.style.top = keyData.position[0] * containerHeight + 'px';
+    popup.style.left = keyData.position[1] * containerWidth + 'px';
     popup.className = "popup";
-    popup.innerText = getKeyPressCharacter(keyPress);
+    popup.innerText = keyData.label;
     container.appendChild(popup);
     setTimeout(() => popup.remove(), 500);
     return popup;

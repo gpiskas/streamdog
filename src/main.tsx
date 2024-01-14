@@ -2,11 +2,11 @@ import "./styles.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App/App";
-import { loadContextData, loadResources } from "./startup";
+import { loadContextData, loadSkin } from "./startup";
 import { GlobalContext, GlobalContextData } from "./GlobalContext";
 
-loadResources().then(_ => {
-  console.log("Resources loaded");
+loadSkin().then(_ => {
+  console.log("Skin loaded");
   return loadContextData();
 }).then(context => {
   console.log("Context loaded", context);

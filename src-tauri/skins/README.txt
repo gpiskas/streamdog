@@ -1,6 +1,6 @@
-Right click anywhere for the context menu. or use the burger icon (hidden when the window is not focused).
+Right click anywhere for the context menu or use the burger icon (hidden when StreamBuddy is not focused).
 
-StreamBuddy is fully customizable by editing the png files in the resources folder.
+StreamBuddy is fully customizable by editing the png files in the skins folder.
 The GIMP source files (.xcf) are included for easier editing, but feel free to use your own tools.
 
 You can also drag and drop GIFs and other images directly in the window and move them around.
