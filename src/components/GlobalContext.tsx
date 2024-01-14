@@ -11,6 +11,7 @@ export interface UserSettings {
 export interface GlobalContextData {
     displaySize: number[]
     userSettings: UserSettings
+    errorMessage: string
 }
 
 export const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData);
