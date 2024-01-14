@@ -1,7 +1,7 @@
 [package]
-name = "streambuddy"
+name = "streameleon"
 version = "1.0.0"
-description = "StreamBuddy"
+description = "Streameleon"
 authors = ["Georgios Piskas"]
 license = ""
 repository = ""

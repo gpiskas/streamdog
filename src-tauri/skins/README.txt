@@ -1,10 +1,11 @@
-Right click anywhere for the context menu or use the burger icon (hidden when StreamBuddy is not focused).
+Right click anywhere for the context menu or use the burger icon (hidden when Streameleon is not focused).
 
-StreamBuddy is fully customizable by editing the png files in the skins folder.
+Streameleon is fully customizable by editing the png files in the skins folder.
+To create a new skin, simply create a new foler and edit/replace the png files.
 The GIMP source files (.xcf) are included for easier editing, but feel free to use your own tools.
 
 You can also drag and drop GIFs and other images directly in the window and move them around.
-Then, save the layout for next time you use StreamBuddy.
+Then, save the layout for next time you use Streameleon.
 
 
-Thanks for using StreamBuddy and for your support!
+Thanks for using Streameleon and for your support!

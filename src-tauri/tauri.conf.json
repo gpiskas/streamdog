@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "StreamBuddy",
+    "productName": "Streameleon",
     "version": "1.0.0"
   },
   "tauri": {
@@ -50,8 +50,8 @@
     "bundle": {
       "active": true,
       "targets": "nsis",
-      "identifier": "com.gpiskas.streambuddy",
-      "shortDescription": "StreamBuddy",
+      "identifier": "com.gpiskas.streameleon",
+      "shortDescription": "Streameleon",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -68,7 +68,7 @@
     },
     "windows": [
       {
-        "title": "StreamBuddy",
+        "title": "Streameleon",
         "fullscreen": false,
         "resizable": false,
         "width": 400,
