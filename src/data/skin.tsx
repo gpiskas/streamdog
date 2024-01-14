@@ -3,7 +3,7 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { GlobalContextData } from "../components/GlobalContext";
 
 export function loadSkin(context: GlobalContextData): Promise<void> {
-    const skin = context.userSettings.selectedSkin;
+    const skin = context.userSettings.skin;
     return Promise.all([
         resolve(`skins/${skin}/background.png`),
         resolve(`skins/${skin}/mouse.png`),

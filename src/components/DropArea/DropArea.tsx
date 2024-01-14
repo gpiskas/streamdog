@@ -1,20 +1,21 @@
 import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Moveable from "moveable";
 import { Item, Menu, Separator, RightSlot, useContextMenu } from 'react-contexify';
 import { appWindow } from '@tauri-apps/api/window';
 import { BaseDirectory, createDir, exists, readTextFile, removeDir, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { appConfigDir, resourceDir } from '@tauri-apps/api/path';
+import { resolveResource, resourceDir } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exit } from '@tauri-apps/api/process';
 import { preventDefault, registerListeners } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
+import { GlobalContext } from "../GlobalContext";
 
 export default function DropArea() {
+  const context = useContext(GlobalContext);
   const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
   const [windowFocused, setWindowFocused] = useState<boolean>();
-  const [toolsEnabled, setToolsEnabled] = useState<boolean>(false);
   const [moveables, setMoveables] = useState<Moveable[]>([]);
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const { show, hideAll } = useContextMenu({ id: 'menu' });
@@ -35,7 +36,7 @@ export default function DropArea() {
     const dropArea = dropAreaRef.current as HTMLElement;
     for (let i = 0; i < files.length; i++) {
       if (files[i].type.startsWith("image")) {
-        getImagePath(files[i]).then(path => {
+        saveImage(files[i]).then(path => {
           const img = document.createElement("img");
           img.style.top = event.clientY - 25 + 'px';
           img.style.left = event.clientX - 25 + 'px';
@@ -68,7 +69,6 @@ export default function DropArea() {
       .on("scale", e => e.target.style.transform = e.drag.transform)
       .on("rotate", e => e.target.style.transform = e.drag.transform);
     setMoveables(prevMovables => [...prevMovables, moveable]);
-    setToolsEnabled(true);
   }
 
   function removeMoveables() {
@@ -79,7 +79,6 @@ export default function DropArea() {
       moveable.destroy();
     });
     setMoveables([]);
-    setToolsEnabled(false);
   }
 
   function addMovables() {
@@ -87,53 +86,57 @@ export default function DropArea() {
       .forEach(element => makeElementMovable(element as HTMLElement));
   }
 
-  function toggleTools(toggle: boolean) {
-    if (toggle) {
-      addMovables();
-    } else {
-      removeMoveables();
-    }
-  }
-
   function toggleAlwaysOnTop(toggle: boolean) {
+    // todo change user setting
     appWindow.setAlwaysOnTop(toggle).then(_ => setAlwaysOnTopEnabled(toggle));
   }
 
-  function createConfigDir(path: string = ''): Promise<void> {
-    return createDir(`./${path}`, { dir: BaseDirectory.AppConfig, recursive: true });
+  function getLayoutDirPath(path: string = '') {
+    return `skins/${context.userSettings.skin}/.layout/${path}`;
   }
 
-  function removeConfigDir(path: string = ''): Promise<void> {
-    return removeDir(`./${path}`, { dir: BaseDirectory.AppConfig, recursive: true });
+  function getOrCreateLayoutDir(): Promise<void> {
+    return createDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true });
   }
 
-  function getConfigPath(pathPart: string): Promise<string> {
-    return appConfigDir().then(path => `${path}${pathPart}`);
+  function deleteLayoutDir(): Promise<void> {
+    return removeDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true });
   }
 
-  function getImagePath(file: File): Promise<string> {
-    return createConfigDir('layout\\images')
+  function saveImage(file: File): Promise<string> {
+    const dir = getLayoutDirPath(file.name);
+    return getOrCreateLayoutDir()
       .then(_ => file.arrayBuffer())
-      .then(bytes => writeBinaryFile(`layout\\images\\${file.name}`, bytes, { dir: BaseDirectory.AppData }))
-      .then(_ => getConfigPath(`layout\\images\\${file.name}`));
+      .then(bytes => writeBinaryFile(dir, bytes, { dir: BaseDirectory.Resource }))
+      .then(_ => resolveResource(dir));
+  }
+
+  function openInfo() {
+    resourceDir().then(dir => open(`${dir}skins`)
+      .then(_ => open(`${dir}skins\\README.txt`)));
+  }
+
+  function openSupportLink() {
+    open("https://ko-fi.com/gpiskas");
   }
 
   function editLayout() {
-    toggleTools(true);
+    addMovables();
   }
 
   function saveLayout() {
-    toggleTools(false);
+    removeMoveables();
     const dropArea = dropAreaRef.current as HTMLElement;
     const content = dropArea.innerHTML.toString();
-    createConfigDir("layout")
-      .then(_ => writeTextFile('layout\\dropArea.html', content, { dir: BaseDirectory.AppConfig }));
+    getOrCreateLayoutDir()
+      .then(_ => writeTextFile(getLayoutDirPath('layout'), content, { dir: BaseDirectory.Resource }));
   }
 
   function loadLayout() {
-    createConfigDir("layout")
-      .then(_ => exists('layout\\dropArea.html', { dir: BaseDirectory.AppConfig }))
-      .then(fileExists => fileExists ? readTextFile('layout\\dropArea.html', { dir: BaseDirectory.AppConfig }) : '')
+    const layoutFile = getLayoutDirPath('layout');
+    getOrCreateLayoutDir()
+      .then(_ => exists(layoutFile, { dir: BaseDirectory.Resource }))
+      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : '')
       .then(innerHTML => {
         const container = dropAreaRef.current as HTMLElement;
         container.innerHTML = innerHTML;
@@ -141,7 +144,7 @@ export default function DropArea() {
   }
 
   function deleteLayout() {
-    removeConfigDir("layout").then(_ => reload())
+    deleteLayoutDir().then(_ => reload())
   }
 
   function reload() {
@@ -151,17 +154,6 @@ export default function DropArea() {
 
   function close() {
     exit(1);
-  }
-
-  function openInfo() {
-    resourceDir().then(dir => {
-      open(dir + "skins\\README.txt")
-      open(dir + "skins")
-    });
-  }
-
-  function openSupportLink() {
-    open("https://ko-fi.com/gpiskas");
   }
 
   function noDroppedElement() {

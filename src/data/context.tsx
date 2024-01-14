@@ -1,9 +1,8 @@
-import { BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
 import { invoke } from "@tauri-apps/api/tauri";
 import { GlobalContextData, UserSettings } from "../components/GlobalContext";
 
 const defaultSettings: UserSettings = {
-    selectedSkin: 'dog',
+    skin: 'dog',
     alwaysOnTop: false,
     hideKeystrokes: false,
     mouseArmPos: [180, 100],

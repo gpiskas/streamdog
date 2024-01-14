@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export interface UserSettings {
-    selectedSkin: string
+    skin: string
     alwaysOnTop: boolean,
     hideKeystrokes: boolean,
     mouseArmPos: number[],
