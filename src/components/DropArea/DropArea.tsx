@@ -10,11 +10,11 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exit } from '@tauri-apps/api/process';
 import { preventDefault, registerListeners } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
-import { GlobalContext } from "../GlobalContext";
+import { GlobalContext } from "../GlobalContextProvider/GlobalContextProvider";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);
-  const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
+const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
   const [windowFocused, setWindowFocused] = useState<boolean>();
   const [moveables, setMoveables] = useState<Moveable[]>([]);
   const dropAreaRef = useRef<HTMLDivElement>(null);
