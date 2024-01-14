@@ -26,6 +26,6 @@ function loadDisplaySize(): Promise<number[]> {
 }
 
 function loadUserSettings(): Promise<UserSettings> {
-    return Promise.resolve(defaultSettings)
+    return Promise.resolve(defaultSettings);
     // return readTextFile("config.json", { dir: BaseDirectory.Resource });
 }

@@ -13,7 +13,11 @@ export default function Error(props: Props) {
   useLayoutEffect(openSkins);
 
   function openSkins() {
-    resourceDir().then(dir => open(`${dir}/skins`));
+    resourceDir().then(dir => open(`${dir}skins`));
+  }
+
+  function reload() {
+    window.location.reload();
   }
 
   return (
@@ -23,6 +27,7 @@ export default function Error(props: Props) {
       onContextMenu={preventDefault}>
       <div data-tauri-drag-region>{props.message}</div>
       <div data-tauri-drag-region>Please fix the skin issue!</div>
+      <button onClick={reload}>Reload</button>
     </div>
   );
 }
