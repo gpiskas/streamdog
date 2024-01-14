@@ -67,7 +67,7 @@ export default function DropArea() {
     }).on("drag", e => e.target.style.transform = e.transform)
       .on("scale", e => e.target.style.transform = e.drag.transform)
       .on("rotate", e => e.target.style.transform = e.drag.transform);
-    setMoveables([...moveables, moveable]);
+    setMoveables(prevMovables => [...prevMovables, moveable]);
     setToolsEnabled(true);
   }
 
@@ -112,24 +112,28 @@ export default function DropArea() {
   }
 
   function getImagePath(file: File): Promise<string> {
-    return createConfigDir('images')
+    return createConfigDir('layout\\images')
       .then(_ => file.arrayBuffer())
-      .then(bytes => writeBinaryFile(`images\\${file.name}`, bytes, { dir: BaseDirectory.AppData }))
-      .then(_ => getConfigPath(`images\\${file.name}`));
+      .then(bytes => writeBinaryFile(`layout\\images\\${file.name}`, bytes, { dir: BaseDirectory.AppData }))
+      .then(_ => getConfigPath(`layout\\images\\${file.name}`));
+  }
+
+  function editLayout() {
+    toggleTools(true);
   }
 
   function saveLayout() {
     toggleTools(false);
     const dropArea = dropAreaRef.current as HTMLElement;
     const content = dropArea.innerHTML.toString();
-    createConfigDir()
-      .then(_ => writeTextFile('dropArea.html', content, { dir: BaseDirectory.AppConfig }));
+    createConfigDir("layout")
+      .then(_ => writeTextFile('layout\\dropArea.html', content, { dir: BaseDirectory.AppConfig }));
   }
 
   function loadLayout() {
-    createConfigDir()
-      .then(_ => exists('dropArea.html', { dir: BaseDirectory.AppConfig }))
-      .then(fileExists => fileExists ? readTextFile('dropArea.html', { dir: BaseDirectory.AppConfig }) : '')
+    createConfigDir("layout")
+      .then(_ => exists('layout\\dropArea.html', { dir: BaseDirectory.AppConfig }))
+      .then(fileExists => fileExists ? readTextFile('layout\\dropArea.html', { dir: BaseDirectory.AppConfig }) : '')
       .then(innerHTML => {
         const container = dropAreaRef.current as HTMLElement;
         container.innerHTML = innerHTML;
@@ -137,7 +141,7 @@ export default function DropArea() {
   }
 
   function deleteLayout() {
-    removeConfigDir().then(_ => reload())
+    removeConfigDir("layout").then(_ => reload())
   }
 
   function reload() {
@@ -179,7 +183,7 @@ export default function DropArea() {
           <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
           <Separator></Separator>
-          <Item disabled={noDroppedElement} onClick={_ => toggleTools(!toolsEnabled)}>{toolsEnabled ? 'Disable' : 'Enable'} layout tools<RightSlot>🔧</RightSlot></Item>
+          <Item disabled={noDroppedElement} onClick={editLayout}>Edit layout<RightSlot>🔧</RightSlot></Item>
           <Item disabled={noDroppedElement} onClick={saveLayout}>Save layout<RightSlot>📸</RightSlot></Item>
           <Item disabled={noDroppedElement} onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
           <Item disabled={noDroppedElement} onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>

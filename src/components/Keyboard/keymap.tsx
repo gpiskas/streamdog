@@ -142,7 +142,6 @@ for (let i = 0; i < keyLayout.length; i++) {
 
 export function getKeyPressCharacter(keyPress: KeyPress): KeyPressData {
   const data = keyPressData.get(keyPress.key);
-  console.log(keyPress.key, data)
   if (data) {
     return data;
   }

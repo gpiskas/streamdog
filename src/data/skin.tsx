@@ -1,13 +1,14 @@
 import { resolveResource } from "@tauri-apps/api/path";
-import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
-import { GlobalContextData } from "./GlobalContext";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { GlobalContextData } from "../components/GlobalContext";
 
-export function loadSkin(): Promise<void> {
+export function loadSkin(context: GlobalContextData): Promise<void> {
+    const skin = context.userSettings.selectedSkin;
     return Promise.all([
-        resolve("skins/dog/background.png"),
-        resolve("skins/dog/mouse.png"),
-        resolve("skins/dog/mouseArm.png"),
-        resolve("skins/dog/keyboardArm.png"),
+        resolve(`skins/${skin}/background.png`),
+        resolve(`skins/${skin}/mouse.png`),
+        resolve(`skins/${skin}/mouseArm.png`),
+        resolve(`skins/${skin}/keyboardArm.png`),
     ]).then(res => {
         const sheet = document.styleSheets[document.styleSheets.length - 1];
         sheet.insertRule(`#background { background-image: ${res[0]} }`, 0);
@@ -19,14 +20,4 @@ export function loadSkin(): Promise<void> {
 
 function resolve(path: string): Promise<string> {
     return resolveResource(path).then(res => `url(${convertFileSrc(res)})`);
-}
-
-export function loadContextData(): Promise<GlobalContextData> {
-    return Promise.all([
-        invoke('get_display_size'),
-    ]).then(res => {
-        return {
-            displaySize: res[0] as number[]
-        } as GlobalContextData;
-    });
 }

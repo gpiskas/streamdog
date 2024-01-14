@@ -1,6 +1,6 @@
 import "./Mouse.css";
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { GlobalContext } from '../../GlobalContext';
+import { GlobalContext } from '../GlobalContext';
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
 

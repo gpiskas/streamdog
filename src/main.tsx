@@ -2,15 +2,13 @@ import "./styles.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App/App";
-import { loadContextData, loadSkin } from "./startup";
-import { GlobalContext, GlobalContextData } from "./GlobalContext";
+import { loadContextData } from "./data/context";
+import { GlobalContext, GlobalContextData } from "./components/GlobalContext";
+import { loadSkin } from "./data/skin";
 
-loadSkin().then(_ => {
-  console.log("Skin loaded");
-  return loadContextData();
-}).then(context => {
+loadContextData().then(context => {
   console.log("Context loaded", context);
-  renderApp(context);
+  loadSkin(context).then(_ => renderApp(context));
 });
 
 function renderApp(context: GlobalContextData) {
