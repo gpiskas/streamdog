@@ -4,7 +4,7 @@ import Mouse from '../Mouse/Mouse';
 import Keyboard from '../Keyboard/Keyboard';
 import DropArea from '../DropArea/DropArea';
 import { useContext } from "react";
-import { GlobalContext } from "../GlobalContextProvider/GlobalContextProvider";
+import { GlobalContext } from "../GlobalContextProvider/context";
 
 export default function App() {
   const context = useContext(GlobalContext);

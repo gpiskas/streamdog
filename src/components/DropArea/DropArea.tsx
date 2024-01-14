@@ -10,11 +10,10 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exit } from '@tauri-apps/api/process';
 import { preventDefault, registerListeners } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
-import { GlobalContext } from "../GlobalContextProvider/GlobalContextProvider";
+import { GlobalContext } from "../GlobalContextProvider/context";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);
-const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
   const [windowFocused, setWindowFocused] = useState<boolean>();
   const [moveables, setMoveables] = useState<Moveable[]>([]);
   const dropAreaRef = useRef<HTMLDivElement>(null);
@@ -86,13 +85,8 @@ const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
       .forEach(element => makeElementMovable(element as HTMLElement));
   }
 
-  function toggleAlwaysOnTop(toggle: boolean) {
-    // todo change user setting
-    appWindow.setAlwaysOnTop(toggle).then(_ => setAlwaysOnTopEnabled(toggle));
-  }
-
   function getLayoutDirPath(path: string = '') {
-    return `skins/${context.userSettings.skin}/.layout/${path}`;
+    return `skins/${context.settings.skin}/.layout/${path}`;
   }
 
   function getOrCreateLayoutDir(): Promise<void> {
@@ -129,11 +123,11 @@ const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
     const dropArea = dropAreaRef.current as HTMLElement;
     const content = dropArea.innerHTML.toString();
     getOrCreateLayoutDir()
-      .then(_ => writeTextFile(getLayoutDirPath('layout'), content, { dir: BaseDirectory.Resource }));
+      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
   }
 
   function loadLayout() {
-    const layoutFile = getLayoutDirPath('layout');
+    const layoutFile = getLayoutDirPath('positions');
     getOrCreateLayoutDir()
       .then(_ => exists(layoutFile, { dir: BaseDirectory.Resource }))
       .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : '')
@@ -147,8 +141,11 @@ const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
     deleteLayoutDir().then(_ => reload())
   }
 
+  function toggleAlwaysOnTop() {
+    context.toggleAlwaysOnTop();
+  }
+
   function reload() {
-    toggleAlwaysOnTop(false);
     window.location.reload();
   }
 
@@ -170,7 +167,7 @@ const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
         onDrop={createDropElement}
         data-tauri-drag-region>
       </div>
-      <div onContextMenu={event => event.preventDefault()}>
+      <div onContextMenu={preventDefault}>
         <Menu id="menu">
           <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
@@ -180,7 +177,7 @@ const [alwaysOnTopEnabled, setAlwaysOnTopEnabled] = useState<boolean>(false);
           <Item disabled={noDroppedElement} onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
           <Item disabled={noDroppedElement} onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
           <Separator></Separator>
-          <Item onClick={_ => toggleAlwaysOnTop(!alwaysOnTopEnabled)}>{alwaysOnTopEnabled ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
+          <Item onClick={toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
           <Item onClick={reload}>Reload<RightSlot>🔄</RightSlot></Item>
           <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
         </Menu>
