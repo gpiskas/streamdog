@@ -1,5 +1,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { GlobalContextData, UserSettings } from "../components/GlobalContext";
+import { BaseDirectory, exists, readTextFile } from "@tauri-apps/api/fs";
+
+const configFile = "config.json";
 
 const defaultSettings: UserSettings = {
     skin: 'dog',
@@ -26,6 +29,13 @@ function loadDisplaySize(): Promise<number[]> {
 }
 
 function loadUserSettings(): Promise<UserSettings> {
-    return Promise.resolve(defaultSettings);
-    // return readTextFile("config.json", { dir: BaseDirectory.Resource });
+    return exists(configFile, { dir: BaseDirectory.Resource })
+        .then(fileExists => {
+            if (fileExists) {
+                console.log("Reading", configFile);
+                return readTextFile(configFile, { dir: BaseDirectory.Resource })
+                    .then(config => ({ ...defaultSettings, ...JSON.parse(config) }));
+            }
+            return defaultSettings;
+        });
 }
