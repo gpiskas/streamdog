@@ -22,16 +22,15 @@
         "open": ".+"
       },  
       "fs": {
+        "exists": true,
         "createDir": true,
         "removeDir": true,
-        "exists": true,
+        "readDir": true,
         "readFile": true,
         "writeFile": true,
         "scope": [
           "$RESOURCE",
-          "$RESOURCE/**",
-          "$APPCONFIG",
-          "$APPCONFIG/**"
+          "$RESOURCE/**"
         ]
       },
       "path": {
@@ -41,9 +40,7 @@
         "asset": true,
         "assetScope": [
           "$RESOURCE",
-          "$RESOURCE/**",
-          "$APPCONFIG",
-          "$APPCONFIG/**"
+          "$RESOURCE/**"
         ]
       }
     },

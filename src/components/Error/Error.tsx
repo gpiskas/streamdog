@@ -2,13 +2,11 @@ import "./Error.css";
 import { preventDefault } from "../../utils";
 import { resourceDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/api/shell";
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
+import { GlobalContext } from "../GlobalContextProvider/context";
 
-interface Props {
-  message: string
-}
-
-export default function Error(props: Props) {
+export default function Error() {
+  const context = useContext(GlobalContext);
 
   useLayoutEffect(openSkins);
 
@@ -16,18 +14,15 @@ export default function Error(props: Props) {
     resourceDir().then(dir => open(`${dir}skins`));
   }
 
-  function reload() {
-    window.location.reload();
-  }
-
   return (
     <div className="container"
       id="error"
       data-tauri-drag-region
       onContextMenu={preventDefault}>
-      <div data-tauri-drag-region>{props.message}</div>
-      <div data-tauri-drag-region>Please fix the skin issue!</div>
-      <button onClick={reload}>Reload</button>
+      <div data-tauri-drag-region>{context.errorMessage}</div>
+      <div data-tauri-drag-region>Please fix the issue!</div>
+      <button onClick={context.reload}>Reload</button>
+      <button onClick={context.resetSettings}>Reset settings</button>
     </div>
   );
 }

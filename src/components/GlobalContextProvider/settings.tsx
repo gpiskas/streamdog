@@ -2,17 +2,17 @@ import { invoke } from "@tauri-apps/api";
 import { exists, BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 
 export interface Settings {
-    skin: string
+    selectedSkin: string
     alwaysOnTop: boolean,
-    hideKeystrokes: boolean,
+    showKeystrokes: boolean,
     mouseArmPos: number[],
     keyboardArmPos: number[],
 }
 
 const defaultSettings: Settings = {
-    skin: 'dog',
+    selectedSkin: 'dog',
     alwaysOnTop: false,
-    hideKeystrokes: false,
+    showKeystrokes: true,
     mouseArmPos: [180, 100],
     keyboardArmPos: [215, 250],
 };
@@ -37,4 +37,8 @@ export function loadSettings(): Promise<Settings> {
 
 export function saveSettings(settings: Settings): Promise<void> {
     return writeTextFile(settingsFile, JSON.stringify(settings), { dir: BaseDirectory.Resource });
+}
+
+export function resetDefaultSettings(): Promise<void> {
+    return saveSettings(defaultSettings);
 }

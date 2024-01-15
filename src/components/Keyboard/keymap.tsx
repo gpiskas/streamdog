@@ -140,11 +140,13 @@ for (let i = 0; i < keyLayout.length; i++) {
   }
 }
 
-export function getKeyPressCharacter(keyPress: KeyPress): KeyPressData {
-  const data = keyPressData.get(keyPress.key);
-  if (data) {
-    return data;
+export function getKeyPressCharacter(keyPress: KeyPress, showKeystrokes: boolean): KeyPressData {
+  if (showKeystrokes) {
+    const data = keyPressData.get(keyPress.key);
+    if (data) {
+      return data;
+    }
+    console.log('Unknown key', keyPress);
   }
-  console.log('Unknown key', keyPress)
-  return { label: '*', position: [0.5, 0.5] };
+  return { label: '*', position: [Math.random(), Math.random()] };
 }

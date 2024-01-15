@@ -2,7 +2,7 @@ import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
 import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Moveable from "moveable";
-import { Item, Menu, Separator, RightSlot, useContextMenu } from 'react-contexify';
+import { Item, Menu, Separator, RightSlot, useContextMenu, Submenu, } from 'react-contexify';
 import { appWindow } from '@tauri-apps/api/window';
 import { BaseDirectory, createDir, exists, readTextFile, removeDir, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
 import { resolveResource, resourceDir } from '@tauri-apps/api/path';
@@ -86,7 +86,7 @@ export default function DropArea() {
   }
 
   function getLayoutDirPath(path: string = '') {
-    return `skins/${context.settings.skin}/.layout/${path}`;
+    return `skins/${context.settings.selectedSkin}/.layout/${path}`;
   }
 
   function getOrCreateLayoutDir(): Promise<void> {
@@ -127,26 +127,20 @@ export default function DropArea() {
   }
 
   function loadLayout() {
+    console.log("Loading layout")
     const layoutFile = getLayoutDirPath('positions');
-    getOrCreateLayoutDir()
-      .then(_ => exists(layoutFile, { dir: BaseDirectory.Resource }))
-      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : '')
+    exists(layoutFile, { dir: BaseDirectory.Resource })
+      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : null)
       .then(innerHTML => {
-        const container = dropAreaRef.current as HTMLElement;
-        container.innerHTML = innerHTML;
+        if (innerHTML) {
+          const container = dropAreaRef.current as HTMLElement;
+          container.innerHTML = innerHTML;
+        }
       });
   }
 
   function deleteLayout() {
-    deleteLayoutDir().then(_ => reload())
-  }
-
-  function toggleAlwaysOnTop() {
-    context.toggleAlwaysOnTop();
-  }
-
-  function reload() {
-    window.location.reload();
+    deleteLayoutDir().then(_ => context.reload())
   }
 
   function close() {
@@ -155,6 +149,10 @@ export default function DropArea() {
 
   function noDroppedElement() {
     return document.querySelectorAll(".droppedElement").length == 0;
+  }
+
+  function selectSkin(skin: string) {
+    context.selectSkin(skin);
   }
 
   return (
@@ -170,6 +168,9 @@ export default function DropArea() {
       <div onContextMenu={preventDefault}>
         <Menu id="menu">
           <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
+          <Submenu className="skinsSubmenu" label={'Select skin...'}>
+              {context.skinOptions.map(skin => <Item key={skin} onClick={_ => selectSkin(skin)}>{skin}</Item>)}
+          </Submenu>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
           <Separator></Separator>
           <Item disabled={noDroppedElement} onClick={editLayout}>Edit layout<RightSlot>🔧</RightSlot></Item>
@@ -177,8 +178,9 @@ export default function DropArea() {
           <Item disabled={noDroppedElement} onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
           <Item disabled={noDroppedElement} onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
           <Separator></Separator>
-          <Item onClick={toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
-          <Item onClick={reload}>Reload<RightSlot>🔄</RightSlot></Item>
+          <Item onClick={context.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
+          <Item onClick={context.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>
+          <Item onClick={context.reload}>Reload<RightSlot>🔄</RightSlot></Item>
           <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
         </Menu>
       </div>

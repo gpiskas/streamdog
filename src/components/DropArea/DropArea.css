@@ -5,24 +5,6 @@
   user-select: none;
 }
 
-.contexify {
-  --contexify-zIndex: 9999;
-  --contexify-menu-bgColor: rgba(40, 40, 40, .98);
-  --contexify-separator-color: #4c4c4c;
-  --contexify-item-color: #fff;
-  --contexify-activeItem-color: #fff;
-  --contexify-activeItem-bgColor: #3498db;
-  --contexify-rightSlot-color: #6f6e77;
-  --contexify-activeRightSlot-color: #fff;
-  --contexify-arrow-color: #6f6e77;
-  --contexify-activeArrow-color: #fff;
-  --contexify-menu-minWidth: 180px;
-  --contexify-separator-margin: 2px;
-  --contexify-itemContent-padding: 3px;
-  --contexify-activeItem-radius: 3px;
-  font-size: 13px;
-}
-
 #menuButton {
   position: absolute;
   display: inline-block;
@@ -31,4 +13,10 @@
   user-select: none;
   bottom: 0;
   margin: 2px;
+}
+
+.skinsSubmenu>.contexify_submenu {
+  overflow-y: auto;
+  max-height: 200px;
+  padding: 5px;
 }

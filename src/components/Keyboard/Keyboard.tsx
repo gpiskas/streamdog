@@ -1,8 +1,9 @@
 import "./Keyboard.css";
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
 import { getKeyPressCharacter } from './keymap';
+import { GlobalContext } from "../GlobalContextProvider/context";
 
 export interface KeyPress {
   id: number
@@ -12,6 +13,7 @@ export interface KeyPress {
 }
 
 export default function Keyboard() {
+  const context = useContext(GlobalContext);
   const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
   const popupContainerRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,7 @@ export default function Keyboard() {
   }
 
   function createPopup(keyPress: KeyPress) {
-    const keyData = getKeyPressCharacter(keyPress);
+    const keyData = getKeyPressCharacter(keyPress, context.settings.showKeystrokes);
     const container = popupContainerRef.current as HTMLDivElement;
     const containerHeight = container.clientHeight as number;
     const containerWidth = container.clientWidth as number;

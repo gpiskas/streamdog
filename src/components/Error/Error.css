@@ -12,5 +12,6 @@
 #error>div {
   font-weight: bold;
   user-select: none;
-  white-space: pre;
+  word-wrap: break-word;
+  width: 90%;
 }
