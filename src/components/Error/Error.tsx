@@ -3,7 +3,7 @@ import { preventDefault } from "../../utils";
 import { resourceDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/api/shell";
 import { useContext, useLayoutEffect } from "react";
-import { GlobalContext } from "../GlobalContextProvider/context";
+import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 
 export default function Error() {
   const context = useContext(GlobalContext);

@@ -3,7 +3,7 @@ import { exists, BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { resolveResource } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { watch } from "tauri-plugin-fs-watch-api";
-import { GlobalContextData } from "./context";
+import { GlobalContextData } from "./GlobalContext";
 
 export function loadSkinData(context: GlobalContextData): Promise<UnlistenFn> {
     return loadSkinOptions(context).then(unlistenSkinOptions => {

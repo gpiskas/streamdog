@@ -10,7 +10,7 @@ import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { exit } from '@tauri-apps/api/process';
 import { preventDefault, registerListeners } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
-import { GlobalContext } from "../GlobalContextProvider/context";
+import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);

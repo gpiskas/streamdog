@@ -2,7 +2,7 @@ import "./Mouse.css";
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
-import { GlobalContext } from "../GlobalContextProvider/context";
+import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 
 export default function Mouse() {
   const context = useContext(GlobalContext);

@@ -3,7 +3,7 @@ import { registerListeners } from "../../utils";
 import { appWindow } from "@tauri-apps/api/window";
 import { loadSkinData } from "./skins";
 import { Settings, loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
-import { GlobalContext, GlobalContextData } from "./context";
+import { GlobalContext, GlobalContextData } from "./GlobalContext";
 import Error from '../Error/Error';
 
 type Props = { children: ReactNode }

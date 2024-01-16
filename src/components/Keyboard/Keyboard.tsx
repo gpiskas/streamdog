@@ -3,7 +3,7 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
 import { getKeyPressCharacter } from './keymap';
-import { GlobalContext } from "../GlobalContextProvider/context";
+import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 
 export interface KeyPress {
   id: number
