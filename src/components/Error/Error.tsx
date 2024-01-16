@@ -14,6 +14,7 @@ export default function Error() {
     resourceDir().then(dir => open(`${dir}skins`));
   }
 
+  console.debug('Rendering', Error.name);
   return (
     <div className="container"
       id="error"

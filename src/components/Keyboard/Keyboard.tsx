@@ -61,6 +61,7 @@ export default function Keyboard() {
     return popup;
   }
 
+  console.debug('Rendering', Keyboard.name);
   return (
     <div className="container" data-tauri-drag-region>
       <div id="keyboard" data-tauri-drag-region>

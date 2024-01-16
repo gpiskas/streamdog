@@ -15,28 +15,21 @@ import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 export default function DropArea() {
   const context = useContext(GlobalContext);
   const [windowFocused, setWindowFocused] = useState<boolean>();
-  const [moveables, setMoveables] = useState<Moveable[]>([]);
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const { show, hideAll } = useContextMenu({ id: 'menu' });
 
   useEffect(listenToWindowFocus, []);
   useLayoutEffect(loadLayout, []);
-  console.log('render');
 
   function listenToWindowFocus() {
     appWindow.isFocused().then(focused => setWindowFocused(focused));
     return registerListeners(DropArea.name,
       appWindow.onFocusChanged(({ payload: focused }) => {
+        toggleMoveables(focused);
         setWindowFocused(focused);
-        if (focused) {
-          addMovables();
-        } else {
-          removeMoveables();
-        }
       })
     );
   }
-
 
   function loadLayout() {
     console.log("Loading layout")
@@ -47,15 +40,34 @@ export default function DropArea() {
         if (innerHTML) {
           const container = dropAreaRef.current as HTMLElement;
           container.innerHTML = innerHTML;
-          addMovables();
+          toggleMoveables(true);
         }
       });
+  }
+
+  function saveLayout() {
+    const dropAreaCopy = dropAreaRef.current?.cloneNode(true) as HTMLElement;
+    dropAreaCopy.querySelectorAll(".moveable-control-box")
+      .forEach(element => element.remove());
+    const content = dropAreaCopy.innerHTML.toString();
+    getOrCreateLayoutDir()
+      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
+  }
+
+  function toggleMoveables(enabled: boolean) {
+    const dropArea = dropAreaRef.current as HTMLElement;
+    if (enabled) {
+      document.querySelectorAll(".droppedElement")
+        .forEach(element => makeElementMovable(element as HTMLElement));
+    } else {
+      dropArea.querySelectorAll(".moveable-control-box")
+        .forEach(element => element.remove());
+    }
   }
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
     preventDefault(event);
     const dropArea = dropAreaRef.current as HTMLElement;
-    const newMoveables = [...moveables];
     const imagePromises = Array.from(event.dataTransfer.files)
       .filter(file => file.type.startsWith("image"))
       .map(file => {
@@ -72,16 +84,13 @@ export default function DropArea() {
     Promise.all(imagePromises).then(images => {
       images.forEach(image => {
         dropArea.appendChild(image);
-        const moveable = makeElementMovable(image);
-        newMoveables.push(moveable);
-      })
-    }).then(_ => {
+        makeElementMovable(image as HTMLElement);
+      });
       saveLayout();
-    })
+    });
   }
 
   function makeElementMovable(element: HTMLElement) {
-    element.removeAttribute("data-tauri-drag-region");
     const moveable = new Moveable(dropAreaRef.current as HTMLElement, {
       target: element,
       // ables: [Editable],
@@ -105,34 +114,6 @@ export default function DropArea() {
       saveLayout();
     };
     return moveable;
-  }
-
-  function saveLayout() {
-    const dropArea = dropAreaRef.current?.cloneNode(true) as HTMLElement;
-    dropArea.querySelectorAll(".moveable-control-box").forEach(element => {
-      element.remove();
-    });
-    const content = dropArea.innerHTML.toString();
-    getOrCreateLayoutDir()
-      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
-  }
-
-  function addMovables() {
-    const moveables = Array.from(document.querySelectorAll(".droppedElement"))
-      .map(element => makeElementMovable(element as HTMLElement));
-    setMoveables(moveables);
-  }
-
-  function removeMoveables() {
-    setMoveables(prev => {
-      prev.forEach(moveable => {
-        const element = moveable.getTargets()[0];
-        element.classList.remove("moveable");
-        element.setAttribute("data-tauri-drag-region", "true");
-        moveable.destroy();
-      });
-      return [];
-    });
   }
 
   function getLayoutDirPath(path: string = '') {
@@ -169,6 +150,7 @@ export default function DropArea() {
     exit(1);
   }
 
+  console.debug('Rendering', DropArea.name);
   return (
     <div className="container">
       <div className="container"

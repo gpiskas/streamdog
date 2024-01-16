@@ -45,7 +45,7 @@ export default function Mouse() {
     const mouseDeviceAngle = -(leftOffset / mousepadWidth - 0.5) * 50;
     const mouseDeviceScale = (topOffset / mousepadHeight) * 0.1 + 0.9;
     mouseDevice.style.transform = `rotate(${mouseDeviceAngle}deg) scale(${mouseDeviceScale})`;
-    mouseDevice.style.filter = buttonPress ? 'brightness(0.7)' : 'brightness(1)';
+    mouseDevice.style.filter = buttonPress ? 'brightness(0.5)' : 'brightness(1)';
   }
 
   function calculateArmMovement() {
@@ -57,6 +57,7 @@ export default function Mouse() {
     arm.style.height = distance + "px";
   }
 
+  console.debug('Rendering', Mouse.name);
   return (
     <div className="container" data-tauri-drag-region>
       <div id="mousepad" ref={mousepadRef} data-tauri-drag-region>

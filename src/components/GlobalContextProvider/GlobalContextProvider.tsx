@@ -86,6 +86,7 @@ export default function GlobalContextProvider({ children }: Props) {
         window.location.reload();
     }
 
+    console.debug('Rendering', GlobalContextProvider.name);
     return (
         <>
             {context.app &&
