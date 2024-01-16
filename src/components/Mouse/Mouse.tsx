@@ -18,7 +18,7 @@ export default function Mouse() {
   useLayoutEffect(onMouseEvent, [mousePosition, buttonPress]);
 
   function listenToMouseEvents() {
-    return registerListeners(
+    return registerListeners(Mouse.name,
       listen('MouseMove', event => setMousePosition(event.payload as number[])),
       listen('ButtonPress', _ => setButtonPress(true)),
       listen('ButtonRelease', _ => setButtonPress(false)),
@@ -32,7 +32,7 @@ export default function Mouse() {
 
   function calculateMouseMovement() {
     const [mouseX, mouseY] = mousePosition;
-    const [displayWidth, displayHeight] = context.displaySize;
+    const [displayWidth, displayHeight] = context.app.displaySize;
     const mousepad = mousepadRef.current as HTMLDivElement;
     const mousepadWidth = mousepad.clientWidth as number;
     const mousepadHeight = mousepad.clientHeight as number;

@@ -35,7 +35,7 @@ function loadSkin(context: GlobalContextData): Promise<UnlistenFn> {
         console.log("Listening for skin file changes on current skin");
         return watch(files, _ => {
             console.log("Skin changed, reloading");
-            context.reload();
+            context.ops.reload();
         }, { delayMs: 1000 });
     }).catch(error => {
         throw new Error("Skin issue!\n" + error.message);
@@ -46,7 +46,7 @@ function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
     return readDir('skins', { dir: BaseDirectory.Resource }).then(entries => {
         const options = entries.filter(entry => !!entry.children).map(entry => entry.name as string);
         if (options.length > 0) {
-            context.skinOptions = options;
+            context.app.skinOptions = options;
             console.log("Skin options:", options);
         } else {
             throw new Error("No skins found!")
@@ -56,7 +56,7 @@ function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
         return resolve('skins').then(path =>
             watch(path, _ => {
                 console.log("Skin options changed, reloading");
-                context.reload();
+                context.ops.reload();
             }, { delayMs: 1000 }));
     }).catch(error => {
         throw new Error("Skin folder issue!\n" + error.message);

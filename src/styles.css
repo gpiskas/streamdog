@@ -15,7 +15,6 @@ body,
     position: absolute;
 }
 
-
 .contexify {
     --contexify-zIndex: 9999;
     --contexify-menu-bgColor: rgba(40, 40, 40, .98);
@@ -27,12 +26,13 @@ body,
     --contexify-activeRightSlot-color: #fff;
     --contexify-arrow-color: #6f6e77;
     --contexify-activeArrow-color: #fff;
-    --contexify-menu-minWidth: 30px;
+    --contexify-menu-minWidth: 170px;
     --contexify-separator-margin: 2px;
     --contexify-itemContent-padding: 3px;
     --contexify-activeItem-radius: 3px;
     font-size: 13px;
 }
+
 ::-webkit-scrollbar {
     width: 5px;
 }

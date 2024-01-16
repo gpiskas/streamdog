@@ -21,38 +21,71 @@ export default function DropArea() {
 
   useEffect(listenToWindowFocus, []);
   useLayoutEffect(loadLayout, []);
+  console.log('render');
 
   function listenToWindowFocus() {
     appWindow.isFocused().then(focused => setWindowFocused(focused));
-    return registerListeners(
-      appWindow.onFocusChanged(({ payload: focused }) => setWindowFocused(focused))
+    return registerListeners(DropArea.name,
+      appWindow.onFocusChanged(({ payload: focused }) => {
+        setWindowFocused(focused);
+        if (focused) {
+          addMovables();
+        } else {
+          removeMoveables();
+        }
+      })
     );
+  }
+
+
+  function loadLayout() {
+    console.log("Loading layout")
+    const layoutFile = getLayoutDirPath('positions');
+    exists(layoutFile, { dir: BaseDirectory.Resource })
+      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : null)
+      .then(innerHTML => {
+        if (innerHTML) {
+          const container = dropAreaRef.current as HTMLElement;
+          container.innerHTML = innerHTML;
+          addMovables();
+        }
+      });
   }
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
     preventDefault(event);
-    const files = event.dataTransfer.files;
     const dropArea = dropAreaRef.current as HTMLElement;
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].type.startsWith("image")) {
-        saveImage(files[i]).then(path => {
-          const img = document.createElement("img");
-          img.style.top = event.clientY - 25 + 'px';
-          img.style.left = event.clientX - 25 + 'px';
-          img.src = convertFileSrc(path);
-          img.classList.add("droppedElement");
-          dropArea.appendChild(img);
-          makeElementMovable(img);
+    const newMoveables = [...moveables];
+    const imagePromises = Array.from(event.dataTransfer.files)
+      .filter(file => file.type.startsWith("image"))
+      .map(file => {
+        return saveImage(file).then(path => {
+          const image = document.createElement("img");
+          image.classList.add("droppedElement");
+          image.src = convertFileSrc(path);
+          image.style.top = event.clientY - 25 + 'px';
+          image.style.left = event.clientX - 25 + 'px';
+          return image;
         });
-      }
-    }
+      });
+
+    Promise.all(imagePromises).then(images => {
+      images.forEach(image => {
+        dropArea.appendChild(image);
+        const moveable = makeElementMovable(image);
+        newMoveables.push(moveable);
+      })
+    }).then(_ => {
+      saveLayout();
+    })
   }
 
   function makeElementMovable(element: HTMLElement) {
-    element.classList.add("moveable");
     element.removeAttribute("data-tauri-drag-region");
     const moveable = new Moveable(dropAreaRef.current as HTMLElement, {
       target: element,
+      // ables: [Editable],
+      // props: { editable: true },
       draggable: true,
       throttleDrag: 0,
       startDragRotate: 0,
@@ -64,25 +97,42 @@ export default function DropArea() {
       rotatable: true,
       throttleRotate: 0,
       rotationPosition: "top"
-    }).on("drag", e => e.target.style.transform = e.transform)
-      .on("scale", e => e.target.style.transform = e.drag.transform)
-      .on("rotate", e => e.target.style.transform = e.drag.transform);
-    setMoveables(prevMovables => [...prevMovables, moveable]);
+    }).on("render", e => e.target.style.transform = e.transform)
+      .on("renderEnd", saveLayout);
+    element.ondblclick = _ => {
+      moveable.destroy();
+      element.remove();
+      saveLayout();
+    };
+    return moveable;
   }
 
-  function removeMoveables() {
-    moveables.forEach(moveable => {
-      const element = moveable.getTargets()[0];
-      element.classList.remove("moveable");
-      element.setAttribute("data-tauri-drag-region", "true");
-      moveable.destroy();
+  function saveLayout() {
+    const dropArea = dropAreaRef.current?.cloneNode(true) as HTMLElement;
+    dropArea.querySelectorAll(".moveable-control-box").forEach(element => {
+      element.remove();
     });
-    setMoveables([]);
+    const content = dropArea.innerHTML.toString();
+    getOrCreateLayoutDir()
+      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
   }
 
   function addMovables() {
-    document.querySelectorAll(".droppedElement:not(.moveable)")
-      .forEach(element => makeElementMovable(element as HTMLElement));
+    const moveables = Array.from(document.querySelectorAll(".droppedElement"))
+      .map(element => makeElementMovable(element as HTMLElement));
+    setMoveables(moveables);
+  }
+
+  function removeMoveables() {
+    setMoveables(prev => {
+      prev.forEach(moveable => {
+        const element = moveable.getTargets()[0];
+        element.classList.remove("moveable");
+        element.setAttribute("data-tauri-drag-region", "true");
+        moveable.destroy();
+      });
+      return [];
+    });
   }
 
   function getLayoutDirPath(path: string = '') {
@@ -93,8 +143,9 @@ export default function DropArea() {
     return createDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true });
   }
 
-  function deleteLayoutDir(): Promise<void> {
-    return removeDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true });
+  function deleteLayout() {
+    removeDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true })
+      .then(context.ops.reload);
   }
 
   function saveImage(file: File): Promise<string> {
@@ -114,45 +165,8 @@ export default function DropArea() {
     open("https://ko-fi.com/gpiskas");
   }
 
-  function editLayout() {
-    addMovables();
-  }
-
-  function saveLayout() {
-    removeMoveables();
-    const dropArea = dropAreaRef.current as HTMLElement;
-    const content = dropArea.innerHTML.toString();
-    getOrCreateLayoutDir()
-      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
-  }
-
-  function loadLayout() {
-    console.log("Loading layout")
-    const layoutFile = getLayoutDirPath('positions');
-    exists(layoutFile, { dir: BaseDirectory.Resource })
-      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : null)
-      .then(innerHTML => {
-        if (innerHTML) {
-          const container = dropAreaRef.current as HTMLElement;
-          container.innerHTML = innerHTML;
-        }
-      });
-  }
-
-  function deleteLayout() {
-    deleteLayoutDir().then(_ => context.reload())
-  }
-
   function close() {
     exit(1);
-  }
-
-  function noDroppedElement() {
-    return document.querySelectorAll(".droppedElement").length == 0;
-  }
-
-  function selectSkin(skin: string) {
-    context.selectSkin(skin);
   }
 
   return (
@@ -169,18 +183,15 @@ export default function DropArea() {
         <Menu id="menu">
           <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
           <Submenu className="skinsSubmenu" label={'Select skin...'}>
-              {context.skinOptions.map(skin => <Item key={skin} onClick={_ => selectSkin(skin)}>{skin}</Item>)}
+            {context.app.skinOptions.map(skin => <Item key={skin} onClick={_ => context.ops.selectSkin(skin)}>{skin}</Item>)}
           </Submenu>
+          <Item onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
+          <Separator></Separator>
+          <Item onClick={context.ops.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
+          <Item onClick={context.ops.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>
+          <Separator></Separator>
           <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
-          <Separator></Separator>
-          <Item disabled={noDroppedElement} onClick={editLayout}>Edit layout<RightSlot>🔧</RightSlot></Item>
-          <Item disabled={noDroppedElement} onClick={saveLayout}>Save layout<RightSlot>📸</RightSlot></Item>
-          <Item disabled={noDroppedElement} onClick={loadLayout}>Load layout<RightSlot>🖼️</RightSlot></Item>
-          <Item disabled={noDroppedElement} onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
-          <Separator></Separator>
-          <Item onClick={context.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
-          <Item onClick={context.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>
-          <Item onClick={context.reload}>Reload<RightSlot>🔄</RightSlot></Item>
+          <Item onClick={context.ops.reload}>Reload<RightSlot>🔄</RightSlot></Item>
           <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
         </Menu>
       </div>

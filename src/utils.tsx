@@ -1,18 +1,9 @@
 import { UnlistenFn } from "@tauri-apps/api/event";
 
-
-export function registerListenersArr(listeners: Promise<Promise<UnlistenFn>[]>) {
-    console.log("Registering listener array");
+export function registerListeners(component: string, ...listeners: Promise<UnlistenFn>[]) {
+    console.log("Registering listeners:", component);
     return () => {
-        console.log("Unregistering listener array");
-        listeners.then(lnrs => Promise.all(lnrs).then(item => item.forEach(listener => listener())));
-    };
-}
-
-export function registerListeners(...listeners: Promise<UnlistenFn>[]) {
-    console.log("Registering listeners");
-    return () => {
-        console.log("Unregistering listeners");
+        console.log("Unregistering listeners:", component);
         Promise.all(listeners).then(item => item.forEach(listener => listener()));
     };
 }

@@ -19,10 +19,10 @@ export default function Error() {
       id="error"
       data-tauri-drag-region
       onContextMenu={preventDefault}>
-      <div data-tauri-drag-region>{context.errorMessage}</div>
+      <div data-tauri-drag-region>{context.app.errorMessage}</div>
       <div data-tauri-drag-region>Please fix the issue!</div>
-      <button onClick={context.reload}>Reload</button>
-      <button onClick={context.resetSettings}>Reset settings</button>
+      <button onClick={context.ops.reload}>Reload</button>
+      <button onClick={context.ops.resetSettings}>Reset settings</button>
     </div>
   );
 }

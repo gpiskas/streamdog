@@ -13,11 +13,11 @@ export default function GlobalContextProvider({ children }: Props) {
     useEffect(loadContext, []);
 
     function loadContext() {
-        registerListeners(
+        registerListeners(GlobalContextProvider.name,
             loadContextData().then(context => {
                 initializeContext(context);
                 const unlisten = loadSkinData(context);
-                unlisten.catch(err => context.errorMessage = err.message)
+                unlisten.catch(err => context.app.errorMessage = err.message)
                     .finally(() => setContext(context));
                 return unlisten;
             }));
@@ -34,14 +34,18 @@ export default function GlobalContextProvider({ children }: Props) {
             loadSettings(),
         ]).then(res => {
             return {
-                skinOptions: [],
-                displaySize: res[0],
                 settings: res[1],
-                reload: reload,
-                toggleAlwaysOnTop: toggleAlwaysOnTop,
-                toggleKeystrokes: toggleKeystrokes,
-                selectSkin: selectSkin,
-                resetSettings: resetSettings,
+                app: {
+                    skinOptions: [],
+                    displaySize: res[0],
+                },
+                ops: {
+                    reload: reload,
+                    toggleAlwaysOnTop: toggleAlwaysOnTop,
+                    toggleKeystrokes: toggleKeystrokes,
+                    selectSkin: selectSkin,
+                    resetSettings: resetSettings,
+                }
             };
         });
     }
@@ -82,16 +86,13 @@ export default function GlobalContextProvider({ children }: Props) {
         window.location.reload();
     }
 
-    function isContextLoaded() {
-        return !!context.settings;
-    }
-
     return (
-        <GlobalContext.Provider value={context}>
-            {context.errorMessage
-                ? <Error />
-                : isContextLoaded() && children
+        <>
+            {context.app &&
+                <GlobalContext.Provider value={context}>
+                    {context.app.errorMessage ? <Error /> : children}
+                </GlobalContext.Provider >
             }
-        </GlobalContext.Provider>
+        </>
     );
 }

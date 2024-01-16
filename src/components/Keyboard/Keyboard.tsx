@@ -22,7 +22,7 @@ export default function Keyboard() {
   useLayoutEffect(onKeyboardEvent, [keyPress]);
 
   function listenToKeyboardEvents() {
-    return registerListeners(
+    return registerListeners(Keyboard.name,
       listen('KeyPress', event => {
         const payload = event.payload as string[];
         setKeyPress({ id: event.id, key: payload[0], character: payload[1] });
