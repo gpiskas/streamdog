@@ -5,16 +5,12 @@ export interface Settings {
     selectedSkin: string
     alwaysOnTop: boolean,
     showKeystrokes: boolean,
-    mouseArmPos: number[],
-    keyboardArmPos: number[],
 }
 
 const defaultSettings: Settings = {
     selectedSkin: 'dog',
     alwaysOnTop: false,
     showKeystrokes: true,
-    mouseArmPos: [180, 100],
-    keyboardArmPos: [215, 250],
 };
 
 const settingsFile = "settings.json";
