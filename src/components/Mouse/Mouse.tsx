@@ -51,7 +51,7 @@ export default function Mouse() {
   function calculateArmMovement() {
     const [left, top] = getRectDistance(mouseRef.current as HTMLElement, armPivotRef.current as HTMLElement);
     const angle = -getRadAngle(left, top);
-    const distance = getDistance(left, top) + 15;
+    const distance = getDistance(left, top) + 10 + (buttonPress ? 5 : 0);
     const arm = armRef.current as HTMLDivElement;
     arm.style.transform = `rotate(${angle}rad)`;
     arm.style.height = distance + "px";
