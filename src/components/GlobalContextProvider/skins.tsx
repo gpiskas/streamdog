@@ -4,6 +4,7 @@ import { resolveResource } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { watch } from "tauri-plugin-fs-watch-api";
 import { GlobalContextData } from "./GlobalContext";
+import { createLayout } from "./layout";
 
 export function loadSkinData(context: GlobalContextData): Promise<UnlistenFn> {
     return loadSkinOptions(context).then(unlistenSkinOptions => {
@@ -18,18 +19,19 @@ export function loadSkinData(context: GlobalContextData): Promise<UnlistenFn> {
 
 function loadSkin(context: GlobalContextData): Promise<UnlistenFn> {
     const skin = context.settings.selectedSkin;
-    return Promise.all([
+    return createLayout(skin).then(_ => Promise.all([
         resolve(`skins/${skin}/background.png`),
         resolve(`skins/${skin}/mouse.png`),
         resolve(`skins/${skin}/mouseArm.png`),
         resolve(`skins/${skin}/keyboardArm.png`),
-    ]).then(files => {
+    ])).then(files => {
         console.log("Skin loaded:", skin);
         const sheet = document.styleSheets[document.styleSheets.length - 1];
         sheet.insertRule(`#background { background-image: url(${convertFileSrc(files[0])}) }`, 0);
         sheet.insertRule(`#mouseDevice { background-image:  url(${convertFileSrc(files[1])}) }`, 0);
         sheet.insertRule(`#mouseArm { background-image: url(${convertFileSrc(files[2])}) }`, 0);
         sheet.insertRule(`#keyboardArm { background-image:  url(${convertFileSrc(files[3])}) }`, 0);
+        ;
         return files;
     }).then(files => {
         console.log("Listening for skin file changes on current skin");
@@ -71,3 +73,4 @@ function resolve(path: string): Promise<string> {
         throw new Error(path);
     });
 }
+

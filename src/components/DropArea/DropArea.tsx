@@ -4,13 +4,13 @@ import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 
 import Moveable from "moveable";
 import { Item, Menu, Separator, RightSlot, useContextMenu, Submenu, } from 'react-contexify';
 import { appWindow } from '@tauri-apps/api/window';
-import { BaseDirectory, createDir, exists, readTextFile, removeDir, writeBinaryFile, writeTextFile } from "@tauri-apps/api/fs";
-import { resolveResource, resourceDir } from '@tauri-apps/api/path';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { resourceDir } from '@tauri-apps/api/path';
 import { exit } from '@tauri-apps/api/process';
 import { preventDefault, registerListeners } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
+import { Destroyable } from "./Destroyable";
+import { readLayout, writeLayout } from "../GlobalContextProvider/layout";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);
@@ -33,16 +33,13 @@ export default function DropArea() {
 
   function loadLayout() {
     console.log("Loading layout")
-    const layoutFile = getLayoutDirPath('positions');
-    exists(layoutFile, { dir: BaseDirectory.Resource })
-      .then(fileExists => fileExists ? readTextFile(layoutFile, { dir: BaseDirectory.Resource }) : null)
-      .then(innerHTML => {
-        if (innerHTML) {
-          const container = dropAreaRef.current as HTMLElement;
-          container.innerHTML = innerHTML;
-          toggleMoveables(true);
-        }
-      });
+    readLayout(context.settings.selectedSkin).then(innerHTML => {
+      if (innerHTML) {
+        const container = dropAreaRef.current as HTMLElement;
+        container.innerHTML = innerHTML;
+        toggleMoveables(true);
+      }
+    });
   }
 
   function saveLayout() {
@@ -50,8 +47,11 @@ export default function DropArea() {
     dropAreaCopy.querySelectorAll(".moveable-control-box")
       .forEach(element => element.remove());
     const content = dropAreaCopy.innerHTML.toString();
-    getOrCreateLayoutDir()
-      .then(_ => writeTextFile(getLayoutDirPath('positions'), content, { dir: BaseDirectory.Resource }));
+    writeLayout(context.settings.selectedSkin, content);
+  }
+
+  function clearLayout() {
+    writeLayout(context.settings.selectedSkin, '').then(context.ops.reload);
   }
 
   function toggleMoveables(enabled: boolean) {
@@ -67,24 +67,28 @@ export default function DropArea() {
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
     preventDefault(event);
-    const dropArea = dropAreaRef.current as HTMLElement;
     const imagePromises = Array.from(event.dataTransfer.files)
       .filter(file => file.type.startsWith("image"))
       .map(file => {
-        return saveImage(file).then(path => {
-          const image = document.createElement("img");
-          image.classList.add("droppedElement");
-          image.src = convertFileSrc(path);
-          image.style.top = event.clientY - 25 + 'px';
-          image.style.left = event.clientX - 25 + 'px';
-          return image;
+        return new Promise<HTMLImageElement>(resolve => {
+          var reader = new FileReader();
+          reader.onload = () => {
+            const image = document.createElement("img");
+            image.classList.add("droppedElement");
+            image.style.top = event.clientY - 25 + 'px';
+            image.style.left = event.clientX - 25 + 'px';
+            image.src = reader.result as string;
+            resolve(image);
+          };
+          reader.readAsDataURL(file);
         });
       });
 
     Promise.all(imagePromises).then(images => {
+      const dropArea = dropAreaRef.current as HTMLElement;
       images.forEach(image => {
         dropArea.appendChild(image);
-        makeElementMovable(image as HTMLElement);
+        makeElementMovable(image);
       });
       saveLayout();
     });
@@ -93,8 +97,8 @@ export default function DropArea() {
   function makeElementMovable(element: HTMLElement) {
     const moveable = new Moveable(dropAreaRef.current as HTMLElement, {
       target: element,
-      // ables: [Editable],
-      // props: { editable: true },
+      ables: [Destroyable],
+      props: { destroyable: true },
       draggable: true,
       throttleDrag: 0,
       startDragRotate: 0,
@@ -108,33 +112,11 @@ export default function DropArea() {
       rotationPosition: "top"
     }).on("render", e => e.target.style.transform = e.transform)
       .on("renderEnd", saveLayout);
-    element.ondblclick = _ => {
+    moveable.on("warpEnd", _ => {
       moveable.destroy();
       element.remove();
       saveLayout();
-    };
-    return moveable;
-  }
-
-  function getLayoutDirPath(path: string = '') {
-    return `skins/${context.settings.selectedSkin}/.layout/${path}`;
-  }
-
-  function getOrCreateLayoutDir(): Promise<void> {
-    return createDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true });
-  }
-
-  function deleteLayout() {
-    removeDir(getLayoutDirPath(), { dir: BaseDirectory.Resource, recursive: true })
-      .then(context.ops.reload);
-  }
-
-  function saveImage(file: File): Promise<string> {
-    const dir = getLayoutDirPath(file.name);
-    return getOrCreateLayoutDir()
-      .then(_ => file.arrayBuffer())
-      .then(bytes => writeBinaryFile(dir, bytes, { dir: BaseDirectory.Resource }))
-      .then(_ => resolveResource(dir));
+    });
   }
 
   function openInfo() {
@@ -148,6 +130,10 @@ export default function DropArea() {
 
   function close() {
     exit(1);
+  }
+
+  function hasNoDroppedElements() {
+    return document.querySelectorAll(".droppedElement").length == 0;
   }
 
   console.debug('Rendering', DropArea.name);
@@ -167,7 +153,7 @@ export default function DropArea() {
           <Submenu className="skinsSubmenu" label={'Select skin...'}>
             {context.app.skinOptions.map(skin => <Item key={skin} onClick={_ => context.ops.selectSkin(skin)}>{skin}</Item>)}
           </Submenu>
-          <Item onClick={deleteLayout}>Delete layout<RightSlot>🗑️</RightSlot></Item>
+          <Item disabled={hasNoDroppedElements} onClick={clearLayout}>Clear layout<RightSlot>🗑️</RightSlot></Item>
           <Separator></Separator>
           <Item onClick={context.ops.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
           <Item onClick={context.ops.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>

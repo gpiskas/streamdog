@@ -19,4 +19,24 @@
   overflow-y: auto;
   max-height: 200px;
   padding: 5px;
+  min-width: 30px;
+}
+
+.moveable-destroyable {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  will-change: transform;
+  transform-origin: 0px 0px;
+}
+
+.moveable-destroyable-button {
+  width: 17px;
+  height: 17px;
+  background: #4af;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
 }
