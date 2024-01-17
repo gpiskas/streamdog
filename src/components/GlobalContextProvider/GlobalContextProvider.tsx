@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { registerListeners } from "../../utils";
 import { appWindow } from "@tauri-apps/api/window";
 import { loadSkinData } from "./skins";
-import { Settings, loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
+import { loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
 import { GlobalContext, GlobalContextData } from "./GlobalContext";
 import Error from '../Error/Error';
 
@@ -10,17 +10,27 @@ type Props = { children: ReactNode }
 export default function GlobalContextProvider({ children }: Props) {
     const [context, setContext] = useState<GlobalContextData>({} as GlobalContextData);
 
-    useEffect(loadContext, []);
+    useEffect(useListeners, []);
+
+    function useListeners() {
+        return registerListeners(GlobalContextProvider.name,
+            loadContext(),
+            listenToWindowFocusChange()
+        );
+    }
 
     function loadContext() {
-        registerListeners(GlobalContextProvider.name,
-            loadContextData().then(context => {
-                initializeContext(context);
-                const unlisten = loadSkinData(context);
-                unlisten.catch(err => context.app.errorMessage = err.message)
-                    .finally(() => setContext(context));
-                return unlisten;
-            }));
+        return loadContextData().then(context => {
+            initializeContext(context);
+            const unlisten = loadSkinData(context);
+            unlisten.catch(err => context.app.errorMessage = err.message)
+                .finally(() => setContext(context));
+            return unlisten;
+        });
+    }
+
+    function listenToWindowFocusChange() {
+        return appWindow.onFocusChanged(({ payload: focused }) => setWindowFocused(focused));
     }
 
     function initializeContext(context: GlobalContextData) {
@@ -38,6 +48,7 @@ export default function GlobalContextProvider({ children }: Props) {
                 app: {
                     skinOptions: [],
                     displaySize: res[0],
+                    windowFocused: true,
                 },
                 ops: {
                     reload: reload,
@@ -54,29 +65,35 @@ export default function GlobalContextProvider({ children }: Props) {
         resetDefaultSettings().then(reload);
     }
 
+    function setWindowFocused(windowFocused: boolean) {
+        updateContext(context => {
+            context.app.windowFocused = windowFocused;
+        });
+    }
+
     function toggleAlwaysOnTop() {
-        updateSettings(settings => {
-            appWindow.setAlwaysOnTop(!settings.alwaysOnTop);
-            settings.alwaysOnTop = !settings.alwaysOnTop;
+        updateContext(context => {
+            appWindow.setAlwaysOnTop(!context.settings.alwaysOnTop);
+            context.settings.alwaysOnTop = !context.settings.alwaysOnTop;
         });
     }
 
     function toggleKeystrokes() {
-        updateSettings(settings => {
-            settings.showKeystrokes = !settings.showKeystrokes;
+        updateContext(context => {
+            context.settings.showKeystrokes = !context.settings.showKeystrokes;
         });
     }
 
     function selectSkin(skin: string) {
-        updateSettings(settings => {
-            settings.selectedSkin = skin;
-        }).then(reload)
+        updateContext(context => {
+            context.settings.selectedSkin = skin;
+        }).then(reload);
     }
 
-    function updateSettings(updater: (settings: Settings) => void) {
+    function updateContext(updater: (context: GlobalContextData) => void) {
         return Promise.resolve(
             setContext(ctx => {
-                updater(ctx.settings);
+                updater(ctx);
                 saveSettings(ctx.settings);
                 return { ...ctx };
             }));

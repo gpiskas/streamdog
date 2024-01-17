@@ -13,18 +13,17 @@
     "allowlist": {
       "window": {
         "startDragging": true,
-        "setAlwaysOnTop": true
+        "setAlwaysOnTop": true,
+        "setFocus": true
       },
       "process": {
         "exit": true
       },
       "shell": {
         "open": ".+"
-      },  
+      },
       "fs": {
         "exists": true,
-        "createDir": true,
-        "removeDir": true,
         "readDir": true,
         "readFile": true,
         "writeFile": true,

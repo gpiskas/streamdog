@@ -1,34 +1,27 @@
 import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import Moveable from "moveable";
 import { Item, Menu, Separator, RightSlot, useContextMenu, Submenu, } from 'react-contexify';
-import { appWindow } from '@tauri-apps/api/window';
 import { resourceDir } from '@tauri-apps/api/path';
 import { exit } from '@tauri-apps/api/process';
-import { preventDefault, registerListeners } from "../../utils";
+import { preventDefault } from "../../utils";
 import { open } from "@tauri-apps/api/shell";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 import { Destroyable } from "./Destroyable";
 import { readLayout, writeLayout } from "../GlobalContextProvider/layout";
+import { appWindow } from "@tauri-apps/api/window";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);
-  const [windowFocused, setWindowFocused] = useState<boolean>();
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const { show, hideAll } = useContextMenu({ id: 'menu' });
 
-  useEffect(listenToWindowFocus, []);
+  useEffect(listenToWindowFocus, [context.app.windowFocused]);
   useLayoutEffect(loadLayout, []);
 
   function listenToWindowFocus() {
-    appWindow.isFocused().then(focused => setWindowFocused(focused));
-    return registerListeners(DropArea.name,
-      appWindow.onFocusChanged(({ payload: focused }) => {
-        toggleMoveables(focused);
-        setWindowFocused(focused);
-      })
-    );
+    toggleMoveables(context.app.windowFocused);
   }
 
   function loadLayout() {
@@ -48,6 +41,7 @@ export default function DropArea() {
       .forEach(element => element.remove());
     const content = dropAreaCopy.innerHTML.toString();
     writeLayout(context.settings.selectedSkin, content);
+    appWindow.setFocus();
   }
 
   function clearLayout() {
@@ -163,7 +157,7 @@ export default function DropArea() {
           <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
         </Menu>
       </div>
-      {windowFocused && <div id="menuButton"
+      {context.app.windowFocused && <div id="menuButton"
         onContextMenu={event => show({ event })}
         onClick={event => show({ event })}>🍔</div>
       }

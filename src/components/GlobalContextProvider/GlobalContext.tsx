@@ -7,6 +7,7 @@ export interface GlobalContextData {
         errorMessage?: string
         displaySize: number[]
         skinOptions: string[]
+        windowFocused: boolean
     }
     ops: {
         reload: () => void
