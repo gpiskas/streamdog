@@ -26,20 +26,20 @@ export default function DropArea() {
 
   function loadLayout() {
     console.log("Loading layout")
-    readLayout(context.settings.selectedSkin).then(innerHTML => {
-      if (innerHTML) {
-        const container = dropAreaRef.current as HTMLElement;
-        container.innerHTML = innerHTML;
-        toggleMoveables(true);
+    readLayout(context.settings.selectedSkin).then(layout => {
+      if (layout) {
+        const dropArea = dropAreaRef.current as HTMLElement;
+        dropArea.innerHTML = layout;
+        dropArea.querySelectorAll(".droppedElement")
+          .forEach(element => makeElementMovable(element as HTMLElement));
       }
     });
   }
 
   function saveLayout() {
-    const dropAreaCopy = dropAreaRef.current?.cloneNode(true) as HTMLElement;
-    dropAreaCopy.querySelectorAll(".moveable-control-box")
-      .forEach(element => element.remove());
-    const content = dropAreaCopy.innerHTML.toString();
+    const dropArea = dropAreaRef.current as HTMLElement;
+    const content = Array.from(dropArea.querySelectorAll(".droppedElement"))
+      .reduce((html, node) => html + node.outerHTML, '');
     writeLayout(context.settings.selectedSkin, content);
   }
 
@@ -49,13 +49,11 @@ export default function DropArea() {
 
   function toggleMoveables(enabled: boolean) {
     const dropArea = dropAreaRef.current as HTMLElement;
-    if (enabled) {
-      document.querySelectorAll(".droppedElement")
-        .forEach(element => makeElementMovable(element as HTMLElement));
-    } else {
-      dropArea.querySelectorAll(".moveable-control-box")
-        .forEach(element => element.remove());
-    }
+    dropArea.querySelectorAll(".moveable-control-box")
+      .forEach(element => {
+        const x = element as HTMLElement;
+        x.style.visibility = enabled ? 'visible' : 'hidden';
+      });
   }
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
@@ -127,7 +125,8 @@ export default function DropArea() {
   }
 
   function hasNoDroppedElements() {
-    return document.querySelectorAll(".droppedElement").length == 0;
+    const dropArea = dropAreaRef.current as HTMLElement;
+    return dropArea.querySelectorAll(".droppedElement").length == 0;
   }
 
   console.debug('Rendering', DropArea.name);
