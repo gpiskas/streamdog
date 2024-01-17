@@ -41,7 +41,6 @@ export default function DropArea() {
       .forEach(element => element.remove());
     const content = dropAreaCopy.innerHTML.toString();
     writeLayout(context.settings.selectedSkin, content);
-    appWindow.setFocus();
   }
 
   function clearLayout() {
@@ -85,6 +84,7 @@ export default function DropArea() {
         makeElementMovable(image);
       });
       saveLayout();
+      appWindow.setFocus();
     });
   }
 
