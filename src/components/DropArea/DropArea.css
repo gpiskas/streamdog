@@ -22,21 +22,18 @@
   min-width: 30px;
 }
 
-.moveable-destroyable {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  will-change: transform;
-  transform-origin: 0px 0px;
-}
-
 .moveable-destroyable-button {
-  width: 17px;
-  height: 17px;
+  position: absolute;
+  transform-origin: 0px 0px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  font-size: 11px;
   background: #4af;
+  border: 2px solid white;
   border-radius: 4px;
-  display: inline-block;
-  font-size: 12px;
   text-align: center;
   cursor: pointer;
+  color: white;
+  user-select: none;
 }
