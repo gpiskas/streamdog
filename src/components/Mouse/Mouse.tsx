@@ -59,14 +59,14 @@ export default function Mouse() {
 
   console.debug('Rendering', Mouse.name);
   return (
-    <div className="container" data-tauri-drag-region>
+    <div id="mouseContainer" className="container" data-tauri-drag-region>
       <div id="mousepad" ref={mousepadRef} data-tauri-drag-region>
-        <div id="mouse" ref={mouseRef} data-tauri-drag-region>
+        <div id="mouse" ref={mouseRef}>
           <div id="mouseDevice" ref={mouseDeviceRef} data-tauri-drag-region></div>
         </div>
       </div>
       <div id="mouseArm" ref={armRef} data-tauri-drag-region>
-        <div id="mouseArmPivot" ref={armPivotRef} data-tauri-drag-region></div>
+        <div id="mouseArmPivot" ref={armPivotRef}></div>
       </div>
     </div>
   );

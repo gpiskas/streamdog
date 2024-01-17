@@ -63,12 +63,12 @@ export default function Keyboard() {
 
   console.debug('Rendering', Keyboard.name);
   return (
-    <div className="container" data-tauri-drag-region>
+    <div id="keyboardContainer" className="container" data-tauri-drag-region>
       <div id="keyboard" data-tauri-drag-region>
         <div id="popupContainer" ref={popupContainerRef} data-tauri-drag-region></div>
       </div>
       <div id="keyboardArm" ref={armRef} data-tauri-drag-region>
-        <div id="keyboardArmPivot" ref={armPivotRef} data-tauri-drag-region></div>
+        <div id="keyboardArmPivot" ref={armPivotRef}></div>
       </div>
     </div>
   );

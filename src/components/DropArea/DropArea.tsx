@@ -2,15 +2,12 @@ import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
 import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import Moveable from "moveable";
-import { Item, Menu, Separator, RightSlot, useContextMenu, Submenu, } from 'react-contexify';
-import { resourceDir } from '@tauri-apps/api/path';
-import { exit } from '@tauri-apps/api/process';
 import { preventDefault } from "../../utils";
-import { open } from "@tauri-apps/api/shell";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 import { Destroyable } from "./Destroyable";
 import { readLayout, writeLayout } from "../GlobalContextProvider/layout";
 import { appWindow } from "@tauri-apps/api/window";
+import { useContextMenu } from "react-contexify";
 
 export default function DropArea() {
   const context = useContext(GlobalContext);
@@ -43,9 +40,6 @@ export default function DropArea() {
     writeLayout(context.settings.selectedSkin, content);
   }
 
-  function clearLayout() {
-    writeLayout(context.settings.selectedSkin, '').then(context.ops.reload);
-  }
 
   function toggleMoveables(enabled: boolean) {
     const dropArea = dropAreaRef.current as HTMLElement;
@@ -111,55 +105,16 @@ export default function DropArea() {
     });
   }
 
-  function openInfo() {
-    resourceDir().then(dir => open(`${dir}skins`)
-      .then(_ => open(`${dir}skins\\README.txt`)));
-  }
-
-  function openSupportLink() {
-    open("https://ko-fi.com/gpiskas");
-  }
-
-  function close() {
-    exit(1);
-  }
-
-  function hasNoDroppedElements() {
-    const dropArea = dropAreaRef.current as HTMLElement;
-    return dropArea.querySelectorAll(".droppedElement").length == 0;
-  }
-
   console.debug('Rendering', DropArea.name);
   return (
-    <div className="container">
-      <div className="container"
-        ref={dropAreaRef}
-        onContextMenu={event => show({ event })}
-        onMouseDown={hideAll}
-        onDragOver={preventDefault}
-        onDrop={createDropElement}
-        data-tauri-drag-region>
-      </div>
-      <div onContextMenu={preventDefault}>
-        <Menu id="menu">
-          <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
-          <Submenu className="skinsSubmenu" label={'Select skin...'}>
-            {context.app.skinOptions.map(skin => <Item key={skin} onClick={_ => context.ops.selectSkin(skin)}>{skin}</Item>)}
-          </Submenu>
-          <Item disabled={hasNoDroppedElements} onClick={clearLayout}>Clear layout<RightSlot>🗑️</RightSlot></Item>
-          <Separator></Separator>
-          <Item onClick={context.ops.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
-          <Item onClick={context.ops.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>
-          <Separator></Separator>
-          <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
-          <Item onClick={context.ops.reload}>Reload<RightSlot>🔄</RightSlot></Item>
-          <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
-        </Menu>
-      </div>
-      {context.app.windowFocused && <div id="menuButton"
-        onContextMenu={event => show({ event })}
-        onClick={event => show({ event })}>🍔</div>
-      }
+    <div id="dropArea"
+      className="container"
+      ref={dropAreaRef}
+      onContextMenu={event => show({ event })}
+      onMouseDown={hideAll}
+      onDragOver={preventDefault}
+      onDrop={createDropElement}
+      data-tauri-drag-region>
     </div>
   );
 }

@@ -16,8 +16,8 @@ export default function Error() {
 
   console.debug('Rendering', Error.name);
   return (
-    <div className="container"
-      id="error"
+    <div id="error"
+      className="container"
       data-tauri-drag-region
       onContextMenu={preventDefault}>
       <div data-tauri-drag-region>{context.app.errorMessage}</div>
