@@ -31,7 +31,6 @@ function loadSkin(context: GlobalContextData): Promise<UnlistenFn> {
         sheet.insertRule(`#mouseDevice { background-image:  url(${convertFileSrc(files[1])}) }`, 0);
         sheet.insertRule(`#mouseArm { background-image: url(${convertFileSrc(files[2])}) }`, 0);
         sheet.insertRule(`#keyboardArm { background-image:  url(${convertFileSrc(files[3])}) }`, 0);
-        ;
         return files;
     }).then(files => {
         console.log("Listening for skin file changes on current skin");

@@ -8,7 +8,7 @@ import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 export default function Error() {
   const context = useContext(GlobalContext);
 
-  useLayoutEffect(openSkins);
+  useLayoutEffect(openSkins, []);
 
   function openSkins() {
     resourceDir().then(dir => open(`${dir}skins`));

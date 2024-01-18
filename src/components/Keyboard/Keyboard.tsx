@@ -1,5 +1,5 @@
 import "./Keyboard.css";
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getDistance, getRadAngle, getRectDistance, registerListeners } from '../../utils';
 import { getKeyPressCharacter } from './keymap';
@@ -13,25 +13,23 @@ export interface KeyPress {
 
 export default function Keyboard() {
   const context = useContext(GlobalContext);
-  const [keyPress, setKeyPress] = useState<KeyPress | null>(null);
   const popupContainerRef = useRef<HTMLDivElement>(null);
   const armRef = useRef<HTMLDivElement>(null);
   const armPivotRef = useRef<HTMLDivElement>(null);
 
   useEffect(listenToKeyboardEvents, []);
-  useLayoutEffect(onKeyboardEvent, [keyPress]);
 
   function listenToKeyboardEvents() {
     return registerListeners(Keyboard.name,
       listen('KeyPress', event => {
         const payload = event.payload as string[];
-        setKeyPress({ id: event.id, key: payload[0], character: payload[1] });
+        onKeyPress({ id: event.id, key: payload[0], character: payload[1] });
       }),
-      listen('KeyRelease', _ => setKeyPress(null))
+      listen('KeyRelease', _ => onKeyPress(null))
     );
   }
 
-  function onKeyboardEvent() {
+  function onKeyPress(keyPress: KeyPress | null) {
     const arm = armRef.current as HTMLDivElement;
     if (keyPress) {
       const popup = createPopup(keyPress);

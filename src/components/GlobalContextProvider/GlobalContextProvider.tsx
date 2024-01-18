@@ -14,8 +14,7 @@ export default function GlobalContextProvider({ children }: Props) {
 
     function useListeners() {
         return registerListeners(GlobalContextProvider.name,
-            loadContext(),
-            listenToWindowFocusChange()
+            loadContext()
         );
     }
 
@@ -27,10 +26,6 @@ export default function GlobalContextProvider({ children }: Props) {
                 .finally(() => setContext(context));
             return unlisten;
         });
-    }
-
-    function listenToWindowFocusChange() {
-        return appWindow.onFocusChanged(({ payload: focused }) => setWindowFocused(focused));
     }
 
     function initializeContext(context: GlobalContextData) {
@@ -48,7 +43,6 @@ export default function GlobalContextProvider({ children }: Props) {
                 app: {
                     skinOptions: [],
                     displaySize: res[0],
-                    windowFocused: true,
                 },
                 ops: {
                     reload: reload,
@@ -63,12 +57,6 @@ export default function GlobalContextProvider({ children }: Props) {
 
     function resetSettings() {
         resetDefaultSettings().then(reload);
-    }
-
-    function setWindowFocused(windowFocused: boolean) {
-        updateContext(context => {
-            context.app.windowFocused = windowFocused;
-        });
     }
 
     function toggleAlwaysOnTop() {

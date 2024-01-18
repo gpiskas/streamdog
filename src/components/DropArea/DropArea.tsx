@@ -2,7 +2,7 @@ import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
 import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import Moveable from "moveable";
-import { preventDefault } from "../../utils";
+import { preventDefault, registerListeners } from "../../utils";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 import { Destroyable } from "./Destroyable";
 import { readLayout, writeLayout } from "../GlobalContextProvider/layout";
@@ -14,11 +14,13 @@ export default function DropArea() {
   const dropAreaRef = useRef<HTMLDivElement>(null);
   const { show, hideAll } = useContextMenu({ id: 'menu' });
 
-  useEffect(listenToWindowFocus, [context.app.windowFocused]);
+  useEffect(listenToWindowFocusChange, []);
   useLayoutEffect(loadLayout, []);
 
-  function listenToWindowFocus() {
-    toggleMoveables(context.app.windowFocused);
+  function listenToWindowFocusChange() {
+    return registerListeners(DropArea.name,
+      appWindow.onFocusChanged(({ payload: focused }) => toggleMoveables(focused))
+    );
   }
 
   function loadLayout() {
@@ -45,8 +47,8 @@ export default function DropArea() {
     const dropArea = dropAreaRef.current as HTMLElement;
     dropArea.querySelectorAll(".moveable-control-box")
       .forEach(element => {
-        const x = element as HTMLElement;
-        x.style.visibility = enabled ? 'visible' : 'hidden';
+        const el = element as HTMLElement;
+        el.style.visibility = enabled ? 'visible' : 'hidden';
       });
   }
 
@@ -76,7 +78,6 @@ export default function DropArea() {
         makeElementMovable(image);
       });
       saveLayout();
-      appWindow.setFocus();
     });
   }
 

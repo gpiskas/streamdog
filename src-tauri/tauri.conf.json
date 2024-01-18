@@ -13,8 +13,7 @@
     "allowlist": {
       "window": {
         "startDragging": true,
-        "setAlwaysOnTop": true,
-        "setFocus": true
+        "setAlwaysOnTop": true
       },
       "process": {
         "exit": true

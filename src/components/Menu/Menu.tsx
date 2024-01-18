@@ -1,17 +1,32 @@
-import { Menu as Mainmenu, Item, RightSlot, Submenu, Separator, useContextMenu } from "react-contexify";
-import { preventDefault } from "../../utils";
 import "./Menu.css";
-import { useContext } from "react";
+import { Menu as Mainmenu, Item, RightSlot, Submenu, Separator, useContextMenu } from "react-contexify";
+import { preventDefault, registerListeners } from "../../utils";
+import { useContext, useEffect, useRef } from "react";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 import { resourceDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/api/shell";
 import { exit } from "@tauri-apps/api/process";
 import { writeLayout } from "../GlobalContextProvider/layout";
+import { appWindow } from "@tauri-apps/api/window";
 
 export default function Menu() {
   const context = useContext(GlobalContext);
+  const menuButtonRef = useRef<HTMLDivElement>(null);
   const { show } = useContextMenu({ id: 'menu' });
 
+
+  useEffect(listenToWindowFocusChange, []);
+
+  function listenToWindowFocusChange() {
+    return registerListeners(Menu.name,
+      appWindow.onFocusChanged(({ payload: focused }) => toggleMenuButton(focused))
+    );
+  }
+
+  function toggleMenuButton(enabled: boolean) {
+    const el = menuButtonRef.current as HTMLElement;
+    el.style.visibility = enabled ? 'visible' : 'hidden';
+  }
 
   function clearLayout() {
     writeLayout(context.settings.selectedSkin, '').then(context.ops.reload);
@@ -47,10 +62,9 @@ export default function Menu() {
         <Item onClick={context.ops.reload}>Reload<RightSlot>🔄</RightSlot></Item>
         <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
       </Mainmenu>
-      {context.app.windowFocused && <div id="menuButton"
+      <div id="menuButton" ref={menuButtonRef}
         onContextMenu={event => show({ event })}
         onClick={event => show({ event })}>🍔</div>
-      }
     </>
   );
 }

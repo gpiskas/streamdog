@@ -6,7 +6,9 @@ export function createLayout(skin: string): Promise<void> {
             return writeLayout(skin, '');
         }
         return Promise.resolve();
-    });
+    }).catch(_ => {
+        throw new Error(`Skin '${skin}' does not exist!`);
+    })
 }
 
 export function writeLayout(skin: string, content: string): Promise<void> {
