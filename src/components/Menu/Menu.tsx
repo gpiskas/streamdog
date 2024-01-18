@@ -1,25 +1,22 @@
 import "./Menu.css";
 import { Menu as Mainmenu, Item, RightSlot, Submenu, Separator, useContextMenu } from "react-contexify";
-import { preventDefault, registerListeners } from "../../utils";
+import { listenToFocusChange as listenToWindowFocusChange, openSkinsFolder, preventDefault, registerListeners } from "../../utils";
 import { useContext, useEffect, useRef } from "react";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
-import { resourceDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/api/shell";
 import { exit } from "@tauri-apps/api/process";
 import { writeLayout } from "../GlobalContextProvider/layout";
-import { appWindow } from "@tauri-apps/api/window";
 
 export default function Menu() {
   const context = useContext(GlobalContext);
   const menuButtonRef = useRef<HTMLDivElement>(null);
   const { show } = useContextMenu({ id: 'menu' });
 
+  useEffect(listenToWindowFocus, []);
 
-  useEffect(listenToWindowFocusChange, []);
-
-  function listenToWindowFocusChange() {
+  function listenToWindowFocus() {
     return registerListeners(Menu.name,
-      appWindow.onFocusChanged(({ payload: focused }) => toggleMenuButton(focused))
+      listenToWindowFocusChange(toggleMenuButton)
     );
   }
 
@@ -33,8 +30,7 @@ export default function Menu() {
   }
 
   function openInfo() {
-    resourceDir().then(dir => open(`${dir}skins`)
-      .then(_ => open(`${dir}skins\\README.txt`)));
+    openSkinsFolder().then(dir => open(`${dir}skins\\README.txt`));
   }
 
   function openSupportLink() {

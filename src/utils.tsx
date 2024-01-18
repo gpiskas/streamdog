@@ -1,4 +1,7 @@
 import { UnlistenFn } from "@tauri-apps/api/event";
+import { appWindow } from "@tauri-apps/api/window";
+import { open } from "@tauri-apps/api/shell";
+import { resourceDir } from "@tauri-apps/api/path";
 
 export function registerListeners(component: string, ...listeners: Promise<UnlistenFn>[]) {
     console.log("Registering listeners:", component);
@@ -25,4 +28,23 @@ export function getDistance(a: number, b: number): number {
 export function preventDefault(event: React.SyntheticEvent): void {
     event.stopPropagation();
     event.preventDefault();
+}
+
+export function listenToFocusChange(callback: (focused: boolean) => void): Promise<UnlistenFn> {
+    return appWindow.onFocusChanged(({ payload: focused }) => callback(focused))
+}
+
+export function openSkinsFolder(): Promise<string> {
+    return resourceDir().then(dir => {
+        open(`${dir}skins`);
+        return dir;
+    });
+}
+
+export function setAlwaysOnTop(alwaysOnTop: boolean): Promise<void> {
+    return appWindow.setAlwaysOnTop(alwaysOnTop);
+}
+
+export function preventAllDefaultKeystrokes() {
+    window.addEventListener("keydown", e => e.preventDefault());
 }

@@ -2,11 +2,10 @@ import "./DropArea.css";
 import 'react-contexify/ReactContexify.css';
 import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import Moveable from "moveable";
-import { preventDefault, registerListeners } from "../../utils";
+import { listenToFocusChange, preventDefault, registerListeners } from "../../utils";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
 import { Destroyable } from "./Destroyable";
 import { readLayout, writeLayout } from "../GlobalContextProvider/layout";
-import { appWindow } from "@tauri-apps/api/window";
 import { useContextMenu } from "react-contexify";
 
 export default function DropArea() {
@@ -19,8 +18,17 @@ export default function DropArea() {
 
   function listenToWindowFocusChange() {
     return registerListeners(DropArea.name,
-      appWindow.onFocusChanged(({ payload: focused }) => toggleMoveables(focused))
+      listenToFocusChange(toggleMoveables)
     );
+  }
+
+  function toggleMoveables(enabled: boolean) {
+    const dropArea = dropAreaRef.current as HTMLElement;
+    dropArea.querySelectorAll(".moveable-control-box")
+      .forEach(element => {
+        const moveable = element as HTMLElement;
+        moveable.style.visibility = enabled ? 'visible' : 'hidden';
+      });
   }
 
   function loadLayout() {
@@ -40,16 +48,6 @@ export default function DropArea() {
     const content = Array.from(dropArea.querySelectorAll(".droppedElement"))
       .reduce((html, node) => html + node.outerHTML, '');
     writeLayout(context.settings.selectedSkin, content);
-  }
-
-
-  function toggleMoveables(enabled: boolean) {
-    const dropArea = dropAreaRef.current as HTMLElement;
-    dropArea.querySelectorAll(".moveable-control-box")
-      .forEach(element => {
-        const el = element as HTMLElement;
-        el.style.visibility = enabled ? 'visible' : 'hidden';
-      });
   }
 
   function createDropElement(event: React.DragEvent<HTMLElement>) {
@@ -98,12 +96,12 @@ export default function DropArea() {
       throttleRotate: 0,
       rotationPosition: "top"
     }).on("render", e => e.target.style.transform = e.transform)
-      .on("renderEnd", saveLayout);
-    moveable.on("warpEnd", _ => {
-      moveable.destroy();
-      element.remove();
-      saveLayout();
-    });
+      .on("renderEnd", saveLayout)
+      .on("warpEnd", _ => {
+        moveable.destroy();
+        element.remove();
+        saveLayout();
+      });
   }
 
   console.debug('Rendering', DropArea.name);

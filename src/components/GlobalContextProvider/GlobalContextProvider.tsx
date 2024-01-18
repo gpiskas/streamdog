@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { registerListeners } from "../../utils";
-import { appWindow } from "@tauri-apps/api/window";
+import { registerListeners, setAlwaysOnTop } from "../../utils";
 import { loadSkinData } from "./skins";
 import { loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
 import { GlobalContext, GlobalContextData } from "./GlobalContext";
@@ -30,19 +29,19 @@ export default function GlobalContextProvider({ children }: Props) {
 
     function initializeContext(context: GlobalContextData) {
         console.log("Context loaded:", context);
-        appWindow.setAlwaysOnTop(context.settings.alwaysOnTop);
+        setAlwaysOnTop(context.settings.alwaysOnTop);
     }
 
     function loadContextData(): Promise<GlobalContextData> {
         return Promise.all([
-            loadDisplaySize(),
             loadSettings(),
+            loadDisplaySize(),
         ]).then(res => {
             return {
-                settings: res[1],
+                settings: res[0],
                 app: {
                     skinOptions: [],
-                    displaySize: res[0],
+                    displaySize: res[1],
                 },
                 ops: {
                     reload: reload,
@@ -55,13 +54,9 @@ export default function GlobalContextProvider({ children }: Props) {
         });
     }
 
-    function resetSettings() {
-        resetDefaultSettings().then(reload);
-    }
-
     function toggleAlwaysOnTop() {
         updateContext(context => {
-            appWindow.setAlwaysOnTop(!context.settings.alwaysOnTop);
+            setAlwaysOnTop(!context.settings.alwaysOnTop);
             context.settings.alwaysOnTop = !context.settings.alwaysOnTop;
         });
     }
@@ -78,6 +73,14 @@ export default function GlobalContextProvider({ children }: Props) {
         }).then(reload);
     }
 
+    function resetSettings() {
+        resetDefaultSettings().then(reload);
+    }
+
+    function reload() {
+        window.location.reload();
+    }
+
     function updateContext(updater: (context: GlobalContextData) => void) {
         return Promise.resolve(
             setContext(ctx => {
@@ -85,10 +88,6 @@ export default function GlobalContextProvider({ children }: Props) {
                 saveSettings(ctx.settings);
                 return { ...ctx };
             }));
-    }
-
-    function reload() {
-        window.location.reload();
     }
 
     console.debug('Rendering', GlobalContextProvider.name);
