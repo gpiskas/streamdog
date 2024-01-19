@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { getName, getVersion } from "@tauri-apps/api/app";
 import { exists, BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 
 export interface Settings {
@@ -17,6 +18,12 @@ const settingsFile = "settings.json";
 
 export function loadDisplaySize(): Promise<number[]> {
     return invoke('get_display_size');
+}
+
+export function loadAppInfo(): Promise<string> {
+    return Promise.all([getName(), getVersion()]).then(res => {
+        return `${res[0]} ${res[1]}`;
+    })
 }
 
 export function loadSettings(): Promise<Settings> {

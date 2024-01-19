@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = [ "fs-read-dir", "shell-open", "fs-exists", "window-start-dragging", "protocol-asset", "fs-read-file", "process-exit", "fs-write-file", "window-set-always-on-top", "path-all"] }
+tauri = { version = "1.5", features = [ "app-all", "fs-read-dir", "shell-open", "fs-exists", "window-start-dragging", "protocol-asset", "fs-read-file", "process-exit", "fs-write-file", "window-set-always-on-top", "path-all"] }
 tauri-plugin-fs-watch = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -23,3 +23,10 @@ rdev = "0.5.3"
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort" # Strip expensive panic clean-up logic
+codegen-units = 1 # Compile crates one after another so the compiler can optimize better
+lto = true # Enables link to optimizations
+opt-level = "s" # Optimize for binary size
+strip = true # Remove debug symbols

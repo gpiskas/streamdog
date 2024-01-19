@@ -45,6 +45,8 @@ export function setAlwaysOnTop(alwaysOnTop: boolean): Promise<void> {
     return appWindow.setAlwaysOnTop(alwaysOnTop);
 }
 
-export function preventAllDefaultKeystrokes() {
-    window.addEventListener("keydown", e => e.preventDefault());
+export function preventAllDefaultKeystrokesInProd() {
+    if (import.meta.env.PROD) {
+        window.addEventListener("keydown", e => e.preventDefault());
+    }
 }

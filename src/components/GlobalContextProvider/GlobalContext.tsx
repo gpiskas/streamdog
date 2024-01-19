@@ -7,6 +7,7 @@ export interface GlobalContextData {
         errorMessage?: string
         displaySize: number[]
         skinOptions: string[]
+        info: string
     }
     ops: {
         reload: () => void

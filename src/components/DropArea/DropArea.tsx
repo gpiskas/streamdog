@@ -18,9 +18,20 @@ export default function DropArea() {
 
   function listenToWindowFocusChange() {
     return registerListeners(DropArea.name,
-      listenToFocusChange(toggleMoveables)
+      listenToFocusChange(onFocusChange)
     );
   }
+
+  function onFocusChange(focused: boolean) {
+    dropShadow(focused);
+    toggleMoveables(focused);
+  }
+
+  function dropShadow(focused: boolean) {
+    const dropArea = dropAreaRef.current as HTMLElement;
+    dropArea.classList.toggle("shadowed", focused);
+  }
+
 
   function toggleMoveables(enabled: boolean) {
     const dropArea = dropAreaRef.current as HTMLElement;

@@ -45,7 +45,6 @@ export default function Menu() {
   return (
     <>
       <Mainmenu id="menu" onContextMenu={preventDefault}>
-        <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
         <Submenu className="skinsSubmenu" label={'Select skin...'}>
           {context.app.skinOptions.map(skin => <Item key={skin} onClick={_ => context.ops.selectSkin(skin)}>{skin}</Item>)}
         </Submenu>
@@ -54,9 +53,12 @@ export default function Menu() {
         <Item onClick={context.ops.toggleAlwaysOnTop}>{context.settings.alwaysOnTop ? 'Disable' : 'Enable'} always on top<RightSlot>📌</RightSlot></Item>
         <Item onClick={context.ops.toggleKeystrokes}>{context.settings.showKeystrokes ? 'Hide' : 'Show'} keystrokes<RightSlot>⌨️</RightSlot></Item>
         <Separator></Separator>
-        <Item onClick={openSupportLink}>Support the developer<RightSlot>❤️</RightSlot></Item>
-        <Item onClick={context.ops.reload}>Reload<RightSlot>🔄</RightSlot></Item>
+        <Item onClick={context.ops.reload}>Reload<RightSlot>♾️</RightSlot></Item>
         <Item onClick={close}>Exit<RightSlot>❌</RightSlot></Item>
+        <Separator></Separator>
+        <Item onClick={openInfo}>Info & Customization<RightSlot>🎬</RightSlot></Item>
+        <Item onClick={openSupportLink}>Support the developer<RightSlot>🍕</RightSlot></Item>
+        <Item disabled>{context.app.info}<RightSlot>🤖</RightSlot></Item>
       </Mainmenu>
       <div id="menuButton" ref={menuButtonRef}
         onContextMenu={event => show({ event })}

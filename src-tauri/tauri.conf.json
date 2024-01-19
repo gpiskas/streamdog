@@ -11,6 +11,9 @@
   },
   "tauri": {
     "allowlist": {
+      "app": {
+        "all": true
+      },
       "window": {
         "startDragging": true,
         "setAlwaysOnTop": true

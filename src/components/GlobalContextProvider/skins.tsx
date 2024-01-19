@@ -27,10 +27,10 @@ function loadSkin(context: GlobalContextData): Promise<UnlistenFn> {
     ])).then(files => {
         console.log("Skin loaded:", skin);
         const sheet = document.styleSheets[document.styleSheets.length - 1];
-        sheet.insertRule(`#background { background-image: url(${convertFileSrc(files[0])}) }`, 0);
-        sheet.insertRule(`#mouseDevice { background-image:  url(${convertFileSrc(files[1])}) }`, 0);
-        sheet.insertRule(`#mouseArm { background-image: url(${convertFileSrc(files[2])}) }`, 0);
-        sheet.insertRule(`#keyboardArm { background-image:  url(${convertFileSrc(files[3])}) }`, 0);
+        sheet.insertRule(`#background { background-image: ${toUrl(files[0])} }`, 0);
+        sheet.insertRule(`#mouseDevice { background-image:  ${toUrl(files[1])} }`, 0);
+        sheet.insertRule(`#mouseArm { background-image: ${toUrl(files[2])} }`, 0);
+        sheet.insertRule(`#keyboardArm { background-image:  ${toUrl(files[3])} }`, 0);
         return files;
     }).then(files => {
         console.log("Listening for skin file changes on current skin");
@@ -41,6 +41,13 @@ function loadSkin(context: GlobalContextData): Promise<UnlistenFn> {
     }).catch(error => {
         throw new Error("Skin issue!\n" + error.message);
     });
+}
+
+function toUrl(path: string) {
+    const url = convertFileSrc(path)
+        .replace(/\(/g, "%28")
+        .replace(/\)/g, "%29");
+    return `url(${url})`;
 }
 
 function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
@@ -54,11 +61,12 @@ function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
         }
     }).then(_ => {
         console.log("Listening for changes to the skins folder");
-        return resolve('skins').then(path =>
-            watch(path, _ => {
-                console.log("Skin options changed, reloading");
-                context.ops.reload();
-            }, { delayMs: 1000 }));
+        return resolve('skins')
+            .then(path =>
+                watch(path, _ => {
+                    console.log("Skin options changed, reloading");
+                    context.ops.reload();
+                }, { delayMs: 1000 }));
     }).catch(error => {
         throw new Error("Skin folder issue!\n" + error.message);
     });

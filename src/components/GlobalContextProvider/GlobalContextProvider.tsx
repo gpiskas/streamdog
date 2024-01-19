@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { registerListeners, setAlwaysOnTop } from "../../utils";
 import { loadSkinData } from "./skins";
-import { loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
+import { loadAppInfo, loadDisplaySize, loadSettings, resetDefaultSettings, saveSettings } from "./settings";
 import { GlobalContext, GlobalContextData } from "./GlobalContext";
 import Error from '../Error/Error';
 
@@ -36,12 +36,14 @@ export default function GlobalContextProvider({ children }: Props) {
         return Promise.all([
             loadSettings(),
             loadDisplaySize(),
+            loadAppInfo(),
         ]).then(res => {
             return {
                 settings: res[0],
                 app: {
                     skinOptions: [],
                     displaySize: res[1],
+                    info: res[2],
                 },
                 ops: {
                     reload: reload,
