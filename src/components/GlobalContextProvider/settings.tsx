@@ -9,7 +9,7 @@ export interface Settings {
 }
 
 const defaultSettings: Settings = {
-    selectedSkin: 'dog',
+    selectedSkin: 'doge',
     alwaysOnTop: false,
     showKeystrokes: true,
 };
