@@ -5,7 +5,7 @@ To create a new skin, simply create a new foler and edit/replace the png files.
 The GIMP source files (.xcf) are included for easier editing, but feel free to use your favorite image editing tools.
 
 You can also drag and drop GIFs and other images directly in the window and move them around.
-Then, save the layout for next time you use Streamdog.
+The layout is saved automatically for next time you use Streamdog.
 
 
 Thanks for using Streamdog and for your support!
