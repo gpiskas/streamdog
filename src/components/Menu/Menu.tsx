@@ -34,7 +34,7 @@ export default function Menu() {
   }
 
   function openSupportLink() {
-    open("https://ko-fi.com/gpiskas");
+    open("https://gpiskas.github.io/about/");
   }
 
   function close() {
