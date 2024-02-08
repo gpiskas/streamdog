@@ -34,7 +34,7 @@ export default function Menu() {
   }
 
   function openSupportLink() {
-    open("https://gpiskas.github.io/about/");
+    open("https://gpiskas.com/about/");
   }
 
   function close() {
