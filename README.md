@@ -19,6 +19,10 @@ Copyright Georgios Piskas © 2024 \
 - Free for personal use
 - [Your support is greatly appreciated](https://gpiskas.com/about/)
 
+https://github.com/gpiskas/streamdog/assets/2886556/55da9610-4a71-4939-8491-d916fc27723d
+
+
+
 ## Skins & Customization
 To create new skins or edit existing ones, open the context menu (`right click or burger icon`) and select `Info & Customization`.
 This will open up the `skins` folder, where you can edit existing `.png` files or create new ones.
