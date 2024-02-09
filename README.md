@@ -3,18 +3,6 @@
 [Streamdog](https://gpiskas.com/projects/streamdog/) is an avatar app that will imitate your clicks and keystrokes in real time, bringing some life to your stream or recording. It is an ideal companion for those who don’t want to use a camera.
 You can easily customize it or create new skins. All you need is an image editor and some creativity.
 
-<video
-  title="Streamdog demo"   
-  width="400" 
-  height="400" 
-  autoplay
-  muted
-  loop
-  controls
-  playsinline>
-  <source src='.github/streamdog.mp4' type="video/mp4"/>
-</video>
-
 ## Download & License
 [Download from Github Releases](https://github.com/gpiskas/streamdog/releases) \
 Free for personal use \
@@ -30,6 +18,8 @@ Copyright Georgios Piskas © 2024 \
 - Option to hide keystrokes and keep always on top
 - Free for personal use
 - [Your support is greatly appreciated](https://gpiskas.com/about/)
+
+<video controls src=".github/streamdog.mp4" title="Streamdog demo"></video>
 
 ## Skins & Customization
 To create new skins or edit existing ones, open the context menu (`right click or burger icon`) and select `Info & Customization`.
