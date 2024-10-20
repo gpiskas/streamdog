@@ -1,6 +1,6 @@
 import { UnlistenFn } from "@tauri-apps/api/event";
-import { appWindow } from "@tauri-apps/api/window";
-import { open } from "@tauri-apps/api/shell";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { open } from "@tauri-apps/plugin-shell";
 import { resourceDir } from "@tauri-apps/api/path";
 
 export function registerListeners(component: string, ...listeners: Promise<UnlistenFn>[]) {
@@ -31,18 +31,18 @@ export function preventDefault(event: React.SyntheticEvent): void {
 }
 
 export function listenToFocusChange(callback: (focused: boolean) => void): Promise<UnlistenFn> {
-    return appWindow.onFocusChanged(({ payload: focused }) => callback(focused))
+    return getCurrentWebviewWindow().onFocusChanged(({ payload: focused }) => callback(focused))
 }
 
 export function openSkinsFolder(): Promise<string> {
     return resourceDir().then(dir => {
-        open(`${dir}skins`);
+        open(`${dir}\\skins`);
         return dir;
     });
 }
 
 export function setAlwaysOnTop(alwaysOnTop: boolean): Promise<void> {
-    return appWindow.setAlwaysOnTop(alwaysOnTop);
+    return getCurrentWebviewWindow().setAlwaysOnTop(alwaysOnTop);
 }
 
 export function preventAllDefaultKeystrokesInProd() {

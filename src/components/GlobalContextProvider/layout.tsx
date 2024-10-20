@@ -1,7 +1,7 @@
-import { BaseDirectory, exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { BaseDirectory, exists, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 export function createLayout(skin: string): Promise<void> {
-    return exists(getLayoutFilePath(skin), { dir: BaseDirectory.Resource }).then(fileExists => {
+    return exists(getLayoutFilePath(skin), { baseDir: BaseDirectory.Resource }).then(fileExists => {
         if (!fileExists) {
             return writeLayout(skin, '');
         }
@@ -12,14 +12,14 @@ export function createLayout(skin: string): Promise<void> {
 }
 
 export function writeLayout(skin: string, content: string): Promise<void> {
-    return writeTextFile(getLayoutFilePath(skin), content, { dir: BaseDirectory.Resource });
+    return writeTextFile(getLayoutFilePath(skin), content, { baseDir: BaseDirectory.Resource });
 }
 
 export function readLayout(skin: string): Promise<string> {
     const layoutFile = getLayoutFilePath(skin);
-    return exists(layoutFile, { dir: BaseDirectory.Resource }).then(fileExists => {
+    return exists(layoutFile, { baseDir: BaseDirectory.Resource }).then(fileExists => {
         if (fileExists) {
-            return readTextFile(layoutFile, { dir: BaseDirectory.Resource });
+            return readTextFile(layoutFile, { baseDir: BaseDirectory.Resource });
         }
         return Promise.resolve('');
     });

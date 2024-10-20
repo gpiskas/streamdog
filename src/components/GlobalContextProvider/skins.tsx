@@ -1,8 +1,7 @@
 import { UnlistenFn } from "@tauri-apps/api/event";
-import { exists, BaseDirectory, readDir } from "@tauri-apps/api/fs";
+import { watch, exists, BaseDirectory, readDir } from "@tauri-apps/plugin-fs";
 import { resolveResource } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { watch } from "tauri-plugin-fs-watch-api";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { GlobalContextData } from "./GlobalContext";
 import { createLayout } from "./layout";
 
@@ -51,8 +50,8 @@ function toUrl(path: string) {
 }
 
 function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
-    return readDir('skins', { dir: BaseDirectory.Resource }).then(entries => {
-        const options = entries.filter(entry => !!entry.children).map(entry => entry.name as string);
+    return readDir('skins', { baseDir: BaseDirectory.Resource }).then(entries => {
+        const options = entries.filter(entry => entry.isDirectory).map(entry => entry.name as string);
         if (options.length > 0) {
             context.app.skinOptions = options;
             console.log("Skin options:", options);
@@ -73,7 +72,7 @@ function loadSkinOptions(context: GlobalContextData): Promise<UnlistenFn> {
 }
 
 function resolve(path: string): Promise<string> {
-    return exists(path, { dir: BaseDirectory.Resource }).then(fileExists => {
+    return exists(path, { baseDir: BaseDirectory.Resource }).then(fileExists => {
         if (fileExists) {
             return resolveResource(path);
         }

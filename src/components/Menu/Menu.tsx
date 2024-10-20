@@ -3,8 +3,8 @@ import { Menu as Mainmenu, Item, RightSlot, Submenu, Separator, useContextMenu }
 import { listenToFocusChange as listenToWindowFocusChange, openSkinsFolder, preventDefault, registerListeners } from "../../utils";
 import { useContext, useEffect, useRef } from "react";
 import { GlobalContext } from "../GlobalContextProvider/GlobalContext";
-import { open } from "@tauri-apps/api/shell";
-import { exit } from "@tauri-apps/api/process";
+import { open } from "@tauri-apps/plugin-shell";
+import { exit } from "@tauri-apps/plugin-process";
 import { writeLayout } from "../GlobalContextProvider/layout";
 
 export default function Menu() {
@@ -30,7 +30,7 @@ export default function Menu() {
   }
 
   function openInfo() {
-    openSkinsFolder().then(dir => open(`${dir}skins\\README.txt`));
+    openSkinsFolder().then(dir => open(`${dir}\\skins\\README.txt`));
   }
 
   function openSupportLink() {

@@ -1,69 +1,30 @@
 {
+  "productName": "Streamdog",
+  "mainBinaryName": "Streamdog",
+  "version": "1.0.1",
+  "identifier": "com.gpiskas.streamdog",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "Streamdog",
-    "version": "1.0.0"
+  "bundle": {
+    "active": true,
+    "targets": "nsis",
+    "resources": [
+      "skins/*"
+    ],
+    "shortDescription": "Streamdog",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
-  "tauri": {
-    "allowlist": {
-      "app": {
-        "all": true
-      },
-      "window": {
-        "startDragging": true,
-        "setAlwaysOnTop": true
-      },
-      "process": {
-        "exit": true
-      },
-      "shell": {
-        "open": ".+"
-      },
-      "fs": {
-        "exists": true,
-        "readDir": true,
-        "readFile": true,
-        "writeFile": true,
-        "scope": [
-          "$RESOURCE",
-          "$RESOURCE/**"
-        ]
-      },
-      "path": {
-        "all": true
-      },
-      "protocol": {
-        "asset": true,
-        "assetScope": [
-          "$RESOURCE",
-          "$RESOURCE/**"
-        ]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "nsis",
-      "identifier": "com.gpiskas.streamdog",
-      "shortDescription": "Streamdog",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "resources": [
-        "skins/*"
-      ]
-    },
-    "security": {
-      "csp": null
-    },
+  "app": {
     "windows": [
       {
         "title": "Streamdog",
@@ -74,8 +35,18 @@
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": false,
-        "fileDropEnabled": false
+        "dragDropEnabled": false
       }
-    ]
+    ],
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$RESOURCE",
+          "$RESOURCE/**"
+        ]
+      },
+      "csp": null
+    }
   }
 }

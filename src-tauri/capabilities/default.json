@@ -1,0 +1,18 @@
+{
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-start-dragging",
+    "fs:allow-resource-read-recursive",
+    "fs:allow-resource-write-recursive",
+    "fs:allow-exists",
+    "fs:allow-watch",
+    "shell:allow-open",
+    "process:allow-exit"
+  ]
+}

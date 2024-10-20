@@ -1,6 +1,6 @@
 [package]
 name = "streamdog"
-version = "1.0.0"
+version = "1.0.1"
 description = "Streamdog"
 authors = ["Georgios Piskas"]
 license = ""
@@ -10,11 +10,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.6", features = [ "app-all", "fs-read-dir", "shell-open", "fs-exists", "window-start-dragging", "protocol-asset", "fs-read-file", "process-exit", "fs-write-file", "window-set-always-on-top", "path-all"] }
-tauri-plugin-fs-watch = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-fs = { version = "2", features = ["watch"] }
+tauri-plugin-shell = "2"
+tauri-plugin-process = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 rdev = "0.5.3"
