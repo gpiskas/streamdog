@@ -13,7 +13,7 @@
     "active": true,
     "targets": "nsis",
     "resources": [
-      "skins/*"
+      "skins/**/*"
     ],
     "shortDescription": "Streamdog",
     "icon": [
