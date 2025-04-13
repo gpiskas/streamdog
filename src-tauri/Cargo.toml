@@ -1,6 +1,6 @@
 [package]
 name = "streamdog"
-version = "1.0.1"
+version = "1.0.2"
 description = "Streamdog"
 authors = ["Georgios Piskas"]
 license = ""
